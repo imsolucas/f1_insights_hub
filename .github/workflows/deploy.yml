@@ -34,9 +34,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Setup Turbo
-        uses: turborepo/setup-action@v1
-
       - name: Generate Prisma Client
         run: |
           cd backend
@@ -75,9 +72,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Setup Turbo
-        uses: turborepo/setup-action@v1
 
       - name: Generate Prisma Client
         run: |
@@ -130,9 +124,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Setup Turbo
-        uses: turborepo/setup-action@v1
 
       - name: Build frontend (verification)
         run: pnpm build --filter=frontend
