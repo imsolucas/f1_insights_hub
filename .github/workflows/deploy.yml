@@ -10,7 +10,7 @@ on:
 
 env:
   PNPM_VERSION: 10.28.0
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   verify:
