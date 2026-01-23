@@ -1,0 +1,138 @@
+---
+alwaysApply: true
+---
+
+# F1 Insight Hub — Branding & UI Guidelines
+
+This document defines the visual and interaction style of the application.
+All frontend work must conform to these guidelines.
+
+---
+
+## Design Philosophy
+
+- Clean, modern, data-first
+- Developer-tool aesthetic (similar to shadcn/ui)
+- Minimal but expressive
+- Avoid flashy or gimmicky visuals
+
+The UI should feel:
+- Professional
+- Calm
+- Trustworthy
+- Slightly technical (for F1 fans)
+
+---
+
+## UI Framework
+
+- shadcn/ui components
+- Tailwind CSS for layout and spacing
+- Radix primitives under the hood
+
+No custom component libraries unless approved.
+
+---
+
+## Color System
+
+### Base
+- Background: neutral / slate / zinc
+- Foreground: high-contrast text
+- Avoid pure black or white
+
+### Accent
+- Primary accent inspired by F1 red
+- Use sparingly for:
+  - Active states
+  - Key stats
+  - CTAs
+
+### Status Colors
+- Success: muted green
+- Warning: amber
+- Error: red (not aggressive)
+
+---
+
+## Typography
+
+- Use default shadcn/ui typography
+- Clear hierarchy:
+  - Page titles: large, bold
+  - Section headers: medium
+  - Body text: normal
+- Avoid decorative fonts
+
+---
+
+## Layout Rules
+
+- Page-based routing
+- Consistent header and sidebar
+- Content centered with max-width
+- Generous spacing between sections
+
+---
+
+## Components
+
+### Allowed
+- Cards
+- Tables
+- Badges
+- Tabs
+- Tooltips
+- Skeleton loaders
+
+### Required
+- Loading states
+- Empty states
+- Error states
+
+---
+
+## Interaction Design
+
+- Subtle hover effects
+- No excessive animations
+- Feedback on user actions
+- Fast perceived performance
+
+---
+
+## Data Visualization
+
+- Charts must be readable
+- Prefer clarity over density
+- Label axes and legends clearly
+
+---
+
+## Accessibility
+
+- Proper contrast
+- Keyboard navigable
+- Semantic HTML
+
+---
+
+## Anti-Patterns (Do Not Do)
+
+- Overuse of gradients
+- Excessive shadows
+- “Dashboard clutter”
+- Hard-coded inline styles
+- Unstyled raw HTML elements
+
+---
+
+## Inspiration References
+
+- shadcn/ui
+- Linear
+- Vercel Dashboard
+- GitHub UI
+
+The UI should feel like a modern developer tool for F1 fans.
+

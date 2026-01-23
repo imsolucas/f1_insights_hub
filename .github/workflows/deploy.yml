@@ -1,0 +1,147 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  PNPM_VERSION: 10.28.0
+  NODE_VERSION: '18'
+
+jobs:
+  verify:
+    name: Verify (Typecheck, Lint, Build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Turbo
+        uses: turborepo/setup-action@v1
+
+      - name: Generate Prisma Client
+        run: |
+          cd backend
+          pnpm prisma:generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+  deploy-backend:
+    name: Deploy Backend to Render
+    needs: verify
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Turbo
+        uses: turborepo/setup-action@v1
+
+      - name: Generate Prisma Client
+        run: |
+          cd backend
+          pnpm prisma:generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Build backend
+        run: pnpm build --filter=backend
+
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy@v1.0.0
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
+
+      - name: Wait for Render deployment
+        run: |
+          echo "Waiting for Render service to be ready..."
+          sleep 30
+
+      - name: Run database migrations on Render
+        run: |
+          echo "Note: Migrations should be configured to run automatically on Render"
+          echo "via the 'prisma migrate deploy' command in the Render service build command"
+          echo "or as a post-deploy script."
+        # Note: Prisma migrations should be configured in Render's service settings
+        # as part of the build command: `cd backend && pnpm prisma migrate deploy`
+
+  deploy-frontend:
+    name: Deploy Frontend to Vercel
+    needs: verify
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Turbo
+        uses: turborepo/setup-action@v1
+
+      - name: Build frontend (verification)
+        run: pnpm build --filter=frontend
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./frontend

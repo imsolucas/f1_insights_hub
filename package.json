@@ -1,0 +1,50 @@
+{
+  "name": "f1-insight-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "F1 Insight Hub - Full-stack application for F1 race data, insights, and predictions",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:frontend": "turbo run dev --filter=frontend",
+    "dev:backend": "turbo run dev --filter=backend",
+    "dev:ml": "turbo run dev --filter=ml",
+    "build": "turbo run build",
+    "build:frontend": "turbo run build --filter=frontend",
+    "build:backend": "turbo run build --filter=backend",
+    "build:ml": "turbo run build --filter=ml",
+    "start": "turbo run start",
+    "start:frontend": "turbo run start --filter=frontend",
+    "start:backend": "turbo run start --filter=backend",
+    "start:ml": "turbo run start --filter=ml",
+    "lint": "turbo run lint",
+    "lint:frontend": "turbo run lint --filter=frontend",
+    "lint:backend": "turbo run lint --filter=backend",
+    "typecheck": "turbo run typecheck",
+    "typecheck:frontend": "turbo run typecheck --filter=frontend",
+    "typecheck:backend": "turbo run typecheck --filter=backend",
+    "test": "turbo run test",
+    "test:frontend": "turbo run test --filter=frontend",
+    "test:backend": "turbo run test --filter=backend",
+    "clean": "turbo run clean && rm -rf node_modules .turbo",
+    "install:all": "pnpm install"
+  },
+  "keywords": [
+    "f1",
+    "formula1",
+    "racing",
+    "insights",
+    "predictions"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.0.0"
+  }
+}

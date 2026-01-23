@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Insight Hub - Project Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #37352f;
+        }
+        h1 { color: #2e7d32; border-bottom: 3px solid #2e7d32; padding-bottom: 10px; }
+        h2 { color: #1976d2; margin-top: 30px; border-bottom: 2px solid #e3f2fd; padding-bottom: 5px; }
+        h3 { color: #424242; margin-top: 20px; }
+        code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .mermaid { background: white; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #2e7d32; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .checklist { list-style: none; padding-left: 0; }
+        .checklist li { padding: 5px 0; }
+        .checklist li:before { content: "☐ "; margin-right: 8px; }
+        .phase-section { background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <h1>🏎️ F1 Insight Hub - Project Documentation</h1>
+    
+    <h2>1. Project Overview</h2>
+    <p><strong>Project Name:</strong> F1 Insight Hub</p>
+    <p><strong>Description:</strong> A full-stack web application for Formula 1 fans to explore race data, statistics, predictions, and AI-generated insights. Built as a portfolio project demonstrating full-stack development, ML integration, and modern web technologies.</p>
+    
+    <h3>Core Goals</h3>
+    <ul>
+        <li>Provide comprehensive F1 race data and statistics</li>
+        <li>Enable race outcome predictions using machine learning</li>
+        <li>Generate AI-powered race summaries and insights</li>
+        <li>Create an engaging, data-first user experience</li>
+        <li>Demonstrate full-stack + ML integration capabilities</li>
+    </ul>
+    
+    <h3>Core Features by Phase</h3>
+    <div class="phase-section">
+        <h4>Phase 1 - MVP (Current)</h4>
+        <ul>
+            <li>Race schedule and results browsing</li>
+            <li>Driver and team statistics</li>
+            <li>Circuit information</li>
+            <li>Basic data visualization</li>
+        </ul>
+    </div>
+    
+    <div class="phase-section">
+        <h4>Phase 2 - ML Integration</h4>
+        <ul>
+            <li>Race outcome prediction models</li>
+            <li>Driver performance trend analysis</li>
+            <li>ML-powered insights</li>
+        </ul>
+    </div>
+    
+    <div class="phase-section">
+        <h4>Phase 3 - AI Features</h4>
+        <ul>
+            <li>AI-generated race summaries</li>
+            <li>F1 chatbot for questions</li>
+            <li>Personalized insights</li>
+        </ul>
+    </div>
+    
+    <div class="phase-section">
+        <h4>Phase 4 - Polishing</h4>
+        <ul>
+            <li>Advanced charts and visualizations</li>
+            <li>User authentication and profiles</li>
+            <li>Leaderboards and comparisons</li>
+            <li>Performance optimizations</li>
+        </ul>
+    </div>
+    
+    <h3>Tech Stack Summary</h3>
+    <ul>
+        <li><strong>Frontend:</strong> Next.js 16, React 19, Tailwind CSS 4, shadcn/ui, TanStack Query</li>
+        <li><strong>Backend:</strong> Node.js, Express, TypeScript, Prisma ORM</li>
+        <li><strong>Database:</strong> PostgreSQL (Render free tier)</li>
+        <li><strong>ML:</strong> Python 3.10+, FastAPI, scikit-learn (Phase 2+)</li>
+        <li><strong>AI:</strong> OpenAI API (Phase 3+)</li>
+        <li><strong>Deployment:</strong> Vercel (frontend), Render (backend + DB), GitHub Actions (CI/CD)</li>
+    </ul>
+    
+    <h3>Links</h3>
+    <ul>
+        <li><strong>Repository:</strong> [GitHub URL - Update after creation]</li>
+        <li><strong>Frontend:</strong> [Vercel URL - Update after deployment]</li>
+        <li><strong>Backend API:</strong> [Render URL - Update after deployment]</li>
+    </ul>
+    
+    <h2>2. Architecture Documentation</h2>
+    
+    <h3>System Architecture</h3>
+    <div class="mermaid">
+    graph TB
+        Client[React UI<br/>Next.js]
+        Backend[Backend API<br/>Node.js/Express]
+        ML[ML API<br/>FastAPI Python]
+        DB[(PostgreSQL<br/>Database)]
+        Ergast[Ergast API<br/>External F1 Data]
+        OpenAI[OpenAI API<br/>AI Features]
+        
+        Client -->|HTTP/REST| Backend
+        Backend -->|Prisma ORM| DB
+        Backend -->|HTTP| Ergast
+        Backend -->|HTTP| ML
+        Backend -->|HTTP| OpenAI
+        ML -->|Read| DB
+        
+        style Client fill:#e3f2fd
+        style Backend fill:#fff3e0
+        style ML fill:#f3e5f5
+        style DB fill:#e8f5e9
+        style Ergast fill:#fce4ec
+        style OpenAI fill:#fff9c4
+    </div>
+    
+    <h3>Data Flow</h3>
+    <div class="mermaid">
+    sequenceDiagram
+        participant User
+        participant Frontend
+        participant Backend
+        participant DB
+        participant Ergast
+        
+        User->>Frontend: Request race data
+        Frontend->>Backend: GET /api/v1/races
+        Backend->>DB: Check cache
+        alt Data exists and fresh
+            DB-->>Backend: Return cached data
+        else Data missing or stale
+            Backend->>Ergast: Fetch from API
+            Ergast-->>Backend: Return F1 data
+            Backend->>DB: Store/update data
+            DB-->>Backend: Confirm storage
+        end
+        Backend-->>Frontend: Return JSON response
+        Frontend-->>User: Display race data
+    </div>
+    
+    <h3>Component Breakdown</h3>
+    
+    <h4>Frontend (Next.js)</h4>
+    <ul>
+        <li><strong>Routes:</strong> App Router with route groups for organization</li>
+        <li><strong>Components:</strong> Reusable UI components (shadcn/ui based)</li>
+        <li><strong>API Client:</strong> Typed client for backend communication</li>
+        <li><strong>State Management:</strong> TanStack Query for server state</li>
+        <li><strong>Styling:</strong> Tailwind CSS with brand tokens</li>
+    </ul>
+    
+    <h4>Backend (Express)</h4>
+    <ul>
+        <li><strong>Controllers:</strong> Request handlers for each resource</li>
+        <li><strong>Services:</strong> Business logic layer</li>
+        <li><strong>Repositories:</strong> Data access layer (Prisma)</li>
+        <li><strong>Routes:</strong> RESTful API endpoints under /api/v1</li>
+        <li><strong>Middleware:</strong> Error handling, validation, logging</li>
+    </ul>
+    
+    <h4>Database (PostgreSQL)</h4>
+    <ul>
+        <li><strong>Schema:</strong> Prisma-managed models</li>
+        <li><strong>Tables:</strong> drivers, constructors, circuits, races, results, qualifying</li>
+        <li><strong>Indexes:</strong> Optimized for common queries</li>
+        <li><strong>Migrations:</strong> Version-controlled schema changes</li>
+    </ul>
+    
+    <h4>ML API (FastAPI) - Phase 2+</h4>
+    <ul>
+        <li><strong>Endpoints:</strong> Prediction endpoints</li>
+        <li><strong>Models:</strong> Trained scikit-learn models</li>
+        <li><strong>Features:</strong> Feature engineering pipeline</li>
+    </ul>
+    
+    <h3>External API Integrations</h3>
+    <table>
+        <tr>
+            <th>Service</th>
+            <th>Purpose</th>
+            <th>Rate Limit</th>
+            <th>Base URL</th>
+        </tr>
+        <tr>
+            <td>Ergast API</td>
+            <td>F1 race data, results, standings</td>
+            <td>4 requests/second</td>
+            <td>https://ergast.com/api/f1</td>
+        </tr>
+        <tr>
+            <td>OpenAI API</td>
+            <td>AI summaries and chatbot (Phase 3+)</td>
+            <td>Pay-as-you-go</td>
+            <td>https://api.openai.com/v1</td>
+        </tr>
+    </table>
+    
+    <h2>3. Tech Stack Details</h2>
+    
+    <h3>Frontend</h3>
+    <ul>
+        <li><strong>Framework:</strong> Next.js 16 (App Router)</li>
+        <li><strong>UI Library:</strong> React 19</li>
+        <li><strong>Styling:</strong> Tailwind CSS 4</li>
+        <li><strong>Components:</strong> shadcn/ui</li>
+        <li><strong>Data Fetching:</strong> TanStack Query (React Query)</li>
+        <li><strong>HTTP Client:</strong> Axios</li>
+        <li><strong>Icons:</strong> Lucide React</li>
+    </ul>
+    
+    <h3>Backend</h3>
+    <ul>
+        <li><strong>Runtime:</strong> Node.js 18+</li>
+        <li><strong>Framework:</strong> Express 5</li>
+        <li><strong>Language:</strong> TypeScript</li>
+        <li><strong>ORM:</strong> Prisma</li>
+        <li><strong>Validation:</strong> Zod</li>
+        <li><strong>Logging:</strong> Pino/Winston</li>
+        <li><strong>HTTP Client:</strong> Axios</li>
+    </ul>
+    
+    <h3>Database</h3>
+    <ul>
+        <li><strong>Type:</strong> PostgreSQL</li>
+        <li><strong>Hosting:</strong> Render (free tier)</li>
+        <li><strong>ORM:</strong> Prisma Client</li>
+        <li><strong>Migrations:</strong> Prisma Migrate</li>
+    </ul>
+    
+    <h3>ML Service (Phase 2+)</h3>
+    <ul>
+        <li><strong>Language:</strong> Python 3.10+</li>
+        <li><strong>Framework:</strong> FastAPI</li>
+        <li><strong>ML Library:</strong> scikit-learn</li>
+        <li><strong>Data Processing:</strong> pandas, numpy</li>
+        <li><strong>Validation:</strong> Pydantic</li>
+    </ul>
+    
+    <h3>Deployment & CI/CD</h3>
+    <ul>
+        <li><strong>Frontend Hosting:</strong> Vercel</li>
+        <li><strong>Backend Hosting:</strong> Render</li>
+        <li><strong>Database Hosting:</strong> Render PostgreSQL</li>
+        <li><strong>CI/CD:</strong> GitHub Actions</li>
+        <li><strong>Version Control:</strong> Git</li>
+    </ul>
+    
+    <h2>4. Database Schema Design</h2>
+    
+    <h3>Tables</h3>
+    <table>
+        <tr>
+            <th>Table</th>
+            <th>Purpose</th>
+            <th>Key Fields</th>
+        </tr>
+        <tr>
+            <td>drivers</td>
+            <td>Driver information</td>
+            <td>id, driverId, forename, surname, nationality, permanentNumber</td>
+        </tr>
+        <tr>
+            <td>constructors</td>
+            <td>Team/constructor information</td>
+            <td>id, constructorId, name, nationality</td>
+        </tr>
+        <tr>
+            <td>circuits</td>
+            <td>Circuit/track information</td>
+            <td>id, circuitId, name, location, country, lat, long</td>
+        </tr>
+        <tr>
+            <td>seasons</td>
+            <td>Season years</td>
+            <td>id, year</td>
+        </tr>
+        <tr>
+            <td>races</td>
+            <td>Race information</td>
+            <td>id, season, round, raceName, circuitId, date, time</td>
+        </tr>
+        <tr>
+            <td>race_results</td>
+            <td>Race finishing positions and points</td>
+            <td>id, raceId, driverId, constructorId, position, points, status</td>
+        </tr>
+        <tr>
+            <td>qualifying_results</td>
+            <td>Qualifying session results</td>
+            <td>id, raceId, driverId, constructorId, position, q1, q2, q3</td>
+        </tr>
+    </table>
+    
+    <h3>Relationships</h3>
+    <ul>
+        <li>Race → Circuit (many-to-one)</li>
+        <li>Race → Season (many-to-one)</li>
+        <li>RaceResult → Race (many-to-one)</li>
+        <li>RaceResult → Driver (many-to-one)</li>
+        <li>RaceResult → Constructor (many-to-one)</li>
+        <li>QualifyingResult → Race (many-to-one)</li>
+        <li>QualifyingResult → Driver (many-to-one)</li>
+        <li>QualifyingResult → Constructor (many-to-one)</li>
+    </ul>
+    
+    <h3>Indexes</h3>
+    <ul>
+        <li>races: season, circuitId, date</li>
+        <li>race_results: raceId, driverId, constructorId</li>
+        <li>qualifying_results: raceId, driverId</li>
+        <li>drivers: driverId (unique)</li>
+        <li>constructors: constructorId (unique)</li>
+        <li>circuits: circuitId (unique)</li>
+    </ul>
+    
+    <h3>Data Synchronization Strategy</h3>
+    <ol>
+        <li>On server startup: Sync current season schedule and drivers/constructors</li>
+        <li>Periodic sync: Check for new race results (after race weekends)</li>
+        <li>Cache-first: Check database before calling Ergast API</li>
+        <li>Manual trigger: Admin endpoint to force sync</li>
+        <li>Historical data: Fetch on-demand when user requests specific seasons</li>
+    </ol>
+    
+    <h2>5. Task Management by Phase</h2>
+    
+    <div class="phase-section">
+        <h3>Phase 1 - MVP (Current Phase)</h3>
+        <ul class="checklist">
+            <li>Set up PostgreSQL database on Render</li>
+            <li>Create Prisma schema for F1 data models</li>
+            <li>Backend: Ergast API integration service</li>
+            <li>Backend: Data synchronization scripts</li>
+            <li>Backend: REST API endpoints for races, drivers, teams, circuits</li>
+            <li>Frontend: Home/Dashboard page</li>
+            <li>Frontend: Race schedule page (current season)</li>
+            <li>Frontend: Drivers list + individual driver pages</li>
+            <li>Frontend: Teams list + team detail pages</li>
+            <li>Frontend: Race results pages</li>
+            <li>Frontend: Circuits information pages</li>
+            <li>Frontend: API client with TanStack Query</li>
+            <li>Frontend: Navigation layout + routing</li>
+            <li>Testing: API endpoint tests</li>
+            <li>Pre-deployment verification: build, typecheck, lint, migrations</li>
+            <li>Set up GitHub Actions CI/CD workflow</li>
+            <li>Configure GitHub secrets for deployment</li>
+            <li>Deploy backend to Render via GitHub Actions</li>
+            <li>Deploy frontend to Vercel via GitHub Actions</li>
+            <li>Configure environment variables for production</li>
+        </ul>
+    </div>
+    
+    <div class="phase-section">
+        <h3>Phase 2 - ML Integration</h3>
+        <ul class="checklist">
+            <li>Set up Python ML service structure</li>
+            <li>Collect historical F1 data for training</li>
+            <li>Feature engineering (circuit characteristics, driver/team performance metrics)</li>
+            <li>Train baseline prediction models (linear regression, decision trees)</li>
+            <li>Create FastAPI endpoints for predictions</li>
+            <li>Integrate prediction API with backend</li>
+            <li>Frontend: Prediction pages and forms</li>
+            <li>Deploy ML API to Render</li>
+            <li>Model versioning and storage strategy</li>
+        </ul>
+    </div>
+    
+    <div class="phase-section">
+        <h3>Phase 3 - AI Features</h3>
+        <ul class="checklist">
+            <li>OpenAI API integration service</li>
+            <li>Race summary generation endpoint</li>
+            <li>F1 chatbot implementation</li>
+            <li>Caching strategy for AI responses (Redis or in-memory)</li>
+            <li>Rate limiting for AI endpoints</li>
+            <li>Frontend: Chat interface</li>
+            <li>Frontend: Display AI-generated summaries</li>
+            <li>Cost monitoring and usage limits</li>
+        </ul>
+    </div>
+    
+    <div class="phase-section">
+        <h3>Phase 4 - Polishing</h3>
+        <ul class="checklist">
+            <li>Data visualization charts (Chart.js or Recharts)</li>
+            <li>Leaderboards and comparison tools</li>
+            <li>User authentication (NextAuth.js or similar)</li>
+            <li>User profiles and preferences</li>
+            <li>Saved predictions and favorites</li>
+            <li>Performance optimizations</li>
+            <li>SEO improvements</li>
+            <li>Analytics integration</li>
+        </ul>
+    </div>
+    
+    <h2>6. Environment Variables & Credentials</h2>
+    
+    <h3>Backend (.env)</h3>
+    <pre><code>NODE_ENV=development|production
+PORT=3001
+CORS_ORIGIN=http://localhost:3000
+DATABASE_URL=postgresql://user:pass@host:5432/f1_insight_hub
+ERGAST_API_BASE_URL=https://ergast.com/api/f1
+OPENAI_API_KEY=sk-... (Phase 3+)
+REDIS_URL=redis://... (Phase 3+, optional)</code></pre>
+    
+    <h3>Frontend (.env.local)</h3>
+    <pre><code>NEXT_PUBLIC_API_URL=http://localhost:3001</code></pre>
+    
+    <h3>ML API (.env) - Phase 2+</h3>
+    <pre><code>MODEL_PATH=/app/models
+API_KEY=... (for auth between backend and ML API)
+PORT=8000</code></pre>
+    
+    <h3>Production Environment Setup</h3>
+    <ul>
+        <li><strong>Render PostgreSQL:</strong> Free tier, note connection limit</li>
+        <li><strong>Render Backend Service:</strong> Environment variables set in dashboard</li>
+        <li><strong>Render ML API Service:</strong> Environment variables set in dashboard</li>
+        <li><strong>Vercel Frontend:</strong> Environment variables in project settings</li>
+    </ul>
+    
+    <h3>GitHub Secrets (for CI/CD)</h3>
+    <ul>
+        <li><code>RENDER_API_KEY</code>: Render API key for backend deployment</li>
+        <li><code>RENDER_SERVICE_ID</code>: Render service ID for backend</li>
+        <li><code>DATABASE_URL</code>: PostgreSQL connection string for migrations</li>
+        <li><code>VERCEL_TOKEN</code>: Vercel authentication token</li>
+        <li><code>VERCEL_ORG_ID</code>: Vercel organization ID</li>
+        <li><code>VERCEL_PROJECT_ID</code>: Vercel project ID</li>
+    </ul>
+    
+    <h2>7. API Documentation</h2>
+    
+    <h3>Phase 1 Endpoints</h3>
+    
+    <h4>Races</h4>
+    <ul>
+        <li><code>GET /api/v1/races</code> - List all races (with pagination, filtering by season)</li>
+        <li><code>GET /api/v1/races/:raceId</code> - Get race details</li>
+        <li><code>GET /api/v1/races/:raceId/results</code> - Get race results</li>
+        <li><code>GET /api/v1/races/:raceId/qualifying</code> - Get qualifying results</li>
+        <li><code>GET /api/v1/races/current/schedule</code> - Get current season schedule</li>
+    </ul>
+    
+    <h4>Drivers</h4>
+    <ul>
+        <li><code>GET /api/v1/drivers</code> - List all drivers (with pagination, filtering by season)</li>
+        <li><code>GET /api/v1/drivers/:driverId</code> - Get driver details and stats</li>
+        <li><code>GET /api/v1/drivers/:driverId/results</code> - Get driver race results history</li>
+    </ul>
+    
+    <h4>Constructors/Teams</h4>
+    <ul>
+        <li><code>GET /api/v1/constructors</code> - List all constructors (with pagination, filtering)</li>
+        <li><code>GET /api/v1/constructors/:constructorId</code> - Get constructor details and stats</li>
+        <li><code>GET /api/v1/constructors/:constructorId/results</code> - Get constructor results history</li>
+    </ul>
+    
+    <h4>Circuits</h4>
+    <ul>
+        <li><code>GET /api/v1/circuits</code> - List all circuits</li>
+        <li><code>GET /api/v1/circuits/:circuitId</code> - Get circuit details</li>
+        <li><code>GET /api/v1/circuits/:circuitId/results</code> - Get all races at this circuit</li>
+    </ul>
+    
+    <h3>Response Format</h3>
+    <pre><code>{
+  "success": true,
+  "data": { ... },
+  "correlationId": "uuid",
+  "timestamp": "ISO-8601"
+}</code></pre>
+    
+    <h3>Error Response Format</h3>
+    <pre><code>{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": { ... }
+  },
+  "correlationId": "uuid",
+  "timestamp": "ISO-8601"
+}</code></pre>
+    
+    <h2>8. Development Workflow</h2>
+    
+    <h3>Branch Strategy</h3>
+    <ul>
+        <li><strong>main:</strong> Production branch, triggers deployment</li>
+        <li><strong>develop:</strong> Staging branch (optional), can trigger staging deployment</li>
+        <li><strong>feature/*:</strong> Feature branches, run verification only</li>
+    </ul>
+    
+    <h3>Commit Conventions</h3>
+    <p>Use conventional commits:</p>
+    <ul>
+        <li><code>feat:</code> New feature</li>
+        <li><code>fix:</code> Bug fix</li>
+        <li><code>docs:</code> Documentation changes</li>
+        <li><code>style:</code> Code style changes (formatting, etc.)</li>
+        <li><code>refactor:</code> Code refactoring</li>
+        <li><code>test:</code> Test additions or changes</li>
+        <li><code>chore:</code> Build process or auxiliary tool changes</li>
+    </ul>
+    
+    <h3>CI/CD Pipeline</h3>
+    <ol>
+        <li>Push to repository triggers GitHub Actions</li>
+        <li>Verify job runs: typecheck, lint, build, test</li>
+        <li>If on <code>main</code> branch and verify succeeds:
+            <ul>
+                <li>Deploy backend to Render</li>
+                <li>Run database migrations</li>
+                <li>Deploy frontend to Vercel</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <h3>Pre-deployment Checks</h3>
+    <ul>
+        <li>TypeScript type checking: <code>pnpm typecheck</code></li>
+        <li>Linting: <code>pnpm lint</code></li>
+        <li>Build verification: <code>pnpm build</code></li>
+        <li>Migration status: <code>npx prisma migrate status</code></li>
+    </ul>
+    
+    <h2>9. Cost Management</h2>
+    
+    <h3>Free Tier Limits</h3>
+    <table>
+        <tr>
+            <th>Service</th>
+            <th>Free Tier Limit</th>
+            <th>Notes</th>
+        </tr>
+        <tr>
+            <td>Vercel</td>
+            <td>Hobby plan</td>
+            <td>Unlimited for personal projects</td>
+        </tr>
+        <tr>
+            <td>Render</td>
+            <td>Free tier</td>
+            <td>Spins down after inactivity, 750 hours/month</td>
+        </tr>
+        <tr>
+            <td>Render PostgreSQL</td>
+            <td>Free tier</td>
+            <td>90 days retention, limited connections</td>
+        </tr>
+        <tr>
+            <td>Ergast API</td>
+            <td>Free</td>
+            <td>4 requests/second rate limit</td>
+        </tr>
+        <tr>
+            <td>OpenAI API</td>
+            <td>Pay-as-you-go</td>
+            <td>Set usage caps, monitor token usage</td>
+        </tr>
+    </table>
+    
+    <h3>Optimization Strategies</h3>
+    <ul>
+        <li>Cache Ergast API responses aggressively (historical data doesn't change)</li>
+        <li>Use database indexes for faster queries</li>
+        <li>Implement pagination to reduce payload sizes</li>
+        <li>Cache AI responses to reduce OpenAI API calls</li>
+        <li>Monitor API usage and set alerts</li>
+        <li>Use appropriate OpenAI models (GPT-3.5-turbo for most tasks)</li>
+    </ul>
+    
+    <h2>10. Learning Resources & References</h2>
+    
+    <h3>Documentation</h3>
+    <ul>
+        <li><a href="http://ergast.com/mrd/">Ergast API Documentation</a></li>
+        <li><a href="https://nextjs.org/docs">Next.js App Router Documentation</a></li>
+        <li><a href="https://www.prisma.io/docs">Prisma Documentation</a></li>
+        <li><a href="https://tanstack.com/query/latest">TanStack Query Documentation</a></li>
+        <li><a href="https://ui.shadcn.com">shadcn/ui Documentation</a></li>
+        <li><a href="https://fastapi.tiangolo.com">FastAPI Documentation</a></li>
+        <li><a href="https://scikit-learn.org">scikit-learn Documentation</a></li>
+    </ul>
+    
+    <h3>F1 Data Sources</h3>
+    <ul>
+        <li><a href="http://ergast.com/mrd/">Ergast Developer API</a> - Primary data source</li>
+        <li><a href="https://www.formula1.com">Formula 1 Official Website</a></li>
+        <li><a href="https://www.fia.com">FIA Official Website</a></li>
+    </ul>
+    
+    <h3>Community Resources</h3>
+    <ul>
+        <li>F1 Reddit communities</li>
+        <li>F1 statistics websites</li>
+        <li>GitHub repositories with F1 data tools</li>
+    </ul>
+    
+    <hr>
+    <p><em>Last updated: [Date]</em></p>
+    <p><em>Document version: 1.0</em></p>
+    
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

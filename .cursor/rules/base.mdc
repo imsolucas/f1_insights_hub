@@ -1,0 +1,57 @@
+---
+alwaysApply: true
+---
+
+Scope
+
+Base engineering principles and quality standards that apply across all parts of the F1 Insight Hub application (frontend, backend, ML, infrastructure).
+
+Non‑negotiables
+- Code must be explainable in interviews and code reviews.
+- Never hardcode secrets or API keys; always use environment variables.
+- Validate all inputs at API and component boundaries.
+⸻
+1) Principles
+
+- Clarity over cleverness: prefer explicit, readable code over clever one-liners.
+- Explicit over implicit: make dependencies and data flows clear.
+- Maintainability over premature optimization: optimize only when profiling shows a need.
+- Portfolio quality: code should demonstrate professional engineering practices.
+⸻
+2) Quality Bar
+
+- Code must be understandable by a human reviewer without extensive comments.
+- Avoid unnecessary abstractions; prefer simple, direct solutions.
+- No copy-paste boilerplate without understanding what it does.
+- Functions should have single responsibility; keep them focused and testable.
+- Prefer composition over inheritance.
+⸻
+3) Security
+
+- Never hardcode secrets, API keys, or credentials.
+- Always use environment variables for sensitive configuration.
+- Validate all inputs at boundaries (API endpoints, form submissions, external data).
+- Sanitize user inputs to prevent injection attacks.
+- Use HTTPS in production; never transmit sensitive data over HTTP.
+⸻
+4) Collaboration Model
+
+- The user is the tech lead; respect their architectural decisions.
+- Explain architectural decisions briefly before implementing major changes.
+- Ask clarifying questions when requirements are ambiguous.
+- Document non-obvious decisions and trade-offs.
+⸻
+5) Tech Constraints
+
+- TypeScript wherever possible; avoid JavaScript unless necessary.
+- REST APIs only; no GraphQL unless explicitly requested.
+- Modular architecture: separate concerns, clear boundaries between modules.
+- Use established patterns and libraries; avoid reinventing the wheel.
+⸻
+6) Code Style
+
+- Use consistent formatting (Prettier/ESLint).
+- Meaningful variable and function names; self-documenting code preferred.
+- Add comments only when logic is non-obvious (explain "why", not "what").
+- Keep functions small and focused (< 50 LOC when possible).
+- Avoid deep nesting; prefer early returns and guard clauses.

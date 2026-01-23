@@ -1,0 +1,123 @@
+---
+alwaysApply: true
+---
+
+Scope
+
+Rules for the Node.js/Express API (backend/) and all backend services. This complements the main .cursorrules file with additional backend-specific patterns.
+
+Non‑negotiables
+- No TODOs or placeholder comments. Keep modules small and testable.
+- Every route validated with zod; errors normalized; logs structured.
+- All external F1 API calls must be cached and rate-limited.
+⸻
+1) Architecture
+
+backend/src/
+  app/              # express app bootstrap, middleware, router attach
+  modules/
+    races/          # controller, service, repo, schemas for race data
+    drivers/        # driver statistics and profiles
+    teams/          # team/constructor data
+    circuits/       # circuit/track information
+    insights/       # AI-generated race summaries and insights
+    predictions/    # ML model predictions integration
+    users/          # user preferences, saved data (if auth added)
+  lib/              # http (errors, validation), logger (pino/winston), cache (redis/memory)
+  routes.ts         # v1 route registration
+  config/           # environment config, database connection
+
+- Controllers (http) → Services (business) → Repos (database/external APIs). Controllers never call database or external APIs directly.
+- Export shared DTO types where frontends need them.
+- External F1 data sources abstracted behind service layer with caching.
+⸻
+2) API Design
+
+- RESTful endpoints, versioned under /v1.
+- Consistent response shapes:
+  - Success: { success: true, data: T, correlationId: string, timestamp: string }
+  - Error: { success: false, error: { code: string, message: string, details?: unknown }, correlationId: string, timestamp: string }
+- Correct HTTP status codes:
+  - 200: Success
+  - 201: Created
+  - 400: Bad Request (validation errors)
+  - 401: Unauthorized
+  - 403: Forbidden
+  - 404: Not Found
+  - 429: Too Many Requests
+  - 500: Internal Server Error
+- Pagination: use cursor-based or offset-based consistently. Include total count when feasible.
+- Filtering and sorting: use query parameters (e.g., ?year=2024&sort=date&order=desc).
+⸻
+3) External Data Integration
+
+- F1 data sources (Ergast API, F1 official API, etc.) abstracted behind service layer.
+- All external calls cached (Redis or in-memory with TTL). Cache keys include data type + identifier.
+- Rate limiting per external API to respect their limits (e.g., Ergast API: 4 calls/second).
+- Retry logic with exponential backoff for transient failures (max 3 retries).
+- Fallback to cached data if external API fails.
+- Never expose external API keys to frontend.
+- Cache invalidation strategy: historical race data rarely changes, cache aggressively; current season data cache for shorter periods.
+⸻
+4) Database (PostgreSQL via Prisma)
+
+- Table/column names: snake_case. Prisma maps to camelCase in application code.
+- Primary keys: id UUID (v7/cuid2 acceptable) or serial integer.
+- Timestamps: created_at, updated_at (default now(), trigger to update).
+- All changes via Prisma migrations. Never edit generated migrations; create new ones.
+- Index frequently queried columns (race_id, driver_id, circuit_id, dates, season/year).
+- Use Prisma middleware for multi-tenant features if needed (or implement at application level).
+- Connection pooling: Prisma connection pool or PgBouncer; configure pool size appropriate for Render/Vercel limits.
+- Transactions: use prisma.$transaction for multi‑row invariants; prefer interactive transactions for read‑modify‑write.
+- Prisma Client: single instance per service process; use Prisma Client extensions for shared logic.
+⸻
+5) Error Handling
+
+- Centralized error middleware maps domain errors → HTTP codes.
+- Structured JSON logs: include correlationId, userId (if any), route, latency, error stack.
+- Production responses never include stack traces or internal error details.
+- Log levels: ERROR for failures, WARN for recoverable issues, INFO for important events, DEBUG for development.
+- Custom error classes for different error types (ValidationError, NotFoundError, ExternalAPIError, etc.).
+- No silent failures; always log errors with context.
+⸻
+6) Validation & Input Sanitization
+
+- All route inputs validated with zod schemas.
+- Sanitize user inputs to prevent injection attacks.
+- Validate query parameters, request body, and route parameters.
+- Return clear validation error messages (field-level errors when possible).
+⸻
+7) Security
+
+- CORS allow‑list from env (frontend domain).
+- Helmet for security headers.
+- Rate limiting: IP-based and user-based (if auth added).
+- Input validation and sanitization on all endpoints.
+- Never log PII; mask sensitive identifiers.
+- API keys for external services stored in env, never hardcoded.
+- Use HTTPS in production (handled by Render/Vercel).
+⸻
+8) Logging & Monitoring
+
+- Structured JSON logs (pino or winston with JSON formatter).
+- Include: correlationId, timestamp, level, message, route, method, userId (if any), latency, error details.
+- Log external API calls: include URL (sanitized), status code, response time.
+- Set up log aggregation (e.g., Render logs, or external service like Logtail).
+- Monitor: response times, error rates, external API failures, cache hit rates.
+⸻
+9) Testing
+
+- Unit: services with repo/external API mocks.
+- Integration: supertest against in‑memory/real Express + test Postgres (Docker or local PostgreSQL).
+- Mock external F1 APIs in tests; never call real APIs in test suite.
+- Test error cases: invalid inputs, external API failures, database errors.
+- Test caching behavior: verify cache hits/misses, TTL expiration.
+⸻
+10) Code Quality
+
+- Functions preferably < 50 LOC; pure services when possible.
+- No ad‑hoc utilities in controllers—move to lib/ or modules.
+- Strong typing across layers; avoid any and wide unknown without narrowing.
+- Use TypeScript strict mode.
+- Prefer composition over inheritance.
+- Extract constants (e.g., cache TTLs, rate limits) to config files.

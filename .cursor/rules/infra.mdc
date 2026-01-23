@@ -1,0 +1,138 @@
+---
+alwaysApply: true
+---
+
+Scope
+
+Deployment and infrastructure rules for F1 Insight Hub. This covers hosting, CI/CD, environment management, and monitoring for the free-tier setup.
+
+Non‑negotiables
+- All secrets and API keys stored in environment variables; never hardcoded.
+- Separate dev and production environments.
+- Build and type-check must pass before deployment.
+⸻
+1) Hosting Architecture
+
+- Frontend: Vercel (Next.js App Router with automatic deployments).
+- Backend API: Render (Node.js/Express service).
+- ML API: Render (Python FastAPI service).
+- Database: PostgreSQL (hosted on Render, Railway, or similar; managed via Prisma).
+- Static assets: Vercel CDN (automatic with Next.js deployment).
+⸻
+2) Environment Management
+
+- Separate environments: development and production.
+- Environment variables stored in platform dashboards (Vercel, Render).
+- Never commit `.env` files to git; use `.env.example` as template.
+- Required environment variables:
+  - Frontend: `NEXT_PUBLIC_API_URL`
+  - Backend: `DATABASE_URL` (PostgreSQL connection string), `OPENAI_API_KEY`, `PORT`, `NODE_ENV`, external F1 API keys
+  - ML API: `MODEL_PATH`, `API_KEY` (for auth), `PORT`
+- Use different API URLs for dev/prod: `api-dev.example.com` vs `api.example.com`.
+⸻
+3) CI/CD Pipeline (GitHub Actions)
+
+- Workflow triggers: push to main branch (production), push to develop branch (staging if needed).
+- Steps:
+  1. Checkout code
+  2. Setup Node.js/Python (cache dependencies)
+  3. Install dependencies (`npm ci` or `pip install -r requirements.txt`)
+  4. Lint and type-check (TypeScript, ESLint, Python linting)
+  5. Run tests (unit, integration)
+  6. Build applications (Next.js build, TypeScript compile)
+  7. Deploy to platforms (Vercel CLI, Render API, or platform auto-deploy)
+- Fail fast: if any step fails, stop deployment.
+- Use GitHub Actions secrets for platform API keys/tokens.
+⸻
+4) Database Migrations
+
+- Prisma migrations: use Prisma CLI (`prisma migrate dev` for development, `prisma migrate deploy` for production).
+- Run migrations before deployment: ensure database schema is up-to-date.
+- Migration strategy: create migration files with `prisma migrate dev`, test locally, then apply to production with `prisma migrate deploy`.
+- Rollback plan: keep previous migration files for rollback if needed; use `prisma migrate resolve` to mark migrations as rolled back.
+- Never run destructive migrations without backup.
+- Store migrations in `prisma/migrations/` directory; commit to version control.
+⸻
+5) Deployment Process
+
+- Frontend (Vercel):
+  - Automatic deployment on push to main branch.
+  - Preview deployments for pull requests.
+  - Build command: `npm run build` (or `pnpm build`).
+  - Environment variables configured in Vercel dashboard.
+- Backend (Render):
+  - Auto-deploy from GitHub repository.
+  - Build command: `npm install && npm run build`.
+  - Start command: `npm start` or `node dist/index.js`.
+  - Health check: `/healthz` endpoint for monitoring.
+- ML API (Render):
+  - Auto-deploy from GitHub repository.
+  - Build command: `pip install -r requirements.txt`.
+  - Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
+  - Health check: `/health` endpoint.
+⸻
+6) Monitoring & Logging
+
+- Vercel: Built-in analytics and logs dashboard.
+- Render: Built-in logs and metrics dashboard.
+- Application logs: Structured JSON logs (pino/winston for Node.js, Python logging for ML).
+- Monitor:
+  - Response times and latency
+  - Error rates (4xx, 5xx responses)
+  - API usage and rate limits
+  - Database connection pool usage
+  - External API call success/failure rates
+- Set up alerts: email notifications for critical errors (if available in free tier).
+⸻
+7) Cost Management
+
+- Stay within free tiers:
+  - Vercel: Hobby plan (free for personal projects)
+  - Render: Free tier (with limitations: spins down after inactivity)
+  - PostgreSQL: Render PostgreSQL (free tier) or Railway (free tier with limits)
+- Monitor usage: track API calls, database size, bandwidth.
+- Optimize:
+  - Cache external API responses to reduce calls
+  - Use database indexes to reduce query costs
+  - Minimize external API usage (OpenAI, F1 APIs)
+  - Optimize images and static assets
+⸻
+8) Security
+
+- HTTPS everywhere: Vercel and Render provide SSL certificates automatically.
+- CORS: Configure allowed origins in backend (frontend domain only).
+- Rate limiting: Implement rate limits to prevent abuse.
+- Environment variables: Never expose secrets in client-side code (use `NEXT_PUBLIC_` prefix only for public vars).
+- Database: Implement access control at application level using Prisma middleware or service layer if multi-user features added.
+- API keys: Rotate keys periodically; use different keys for dev/prod.
+⸻
+9) Backup & Recovery
+
+- Database backups: Configure automated backups via hosting provider (Render, Railway) or use pg_dump in scheduled jobs.
+- Code backups: GitHub repository serves as code backup.
+- Model backups: Store trained ML models in version control or cloud storage.
+- Recovery plan: Document steps to restore from backups.
+⸻
+10) Performance Optimization
+
+- Frontend: Use Next.js Image optimization, code splitting, static generation where possible.
+- Backend: Implement caching (Redis or in-memory) for external API responses.
+- Database: Add indexes on frequently queried columns.
+- CDN: Vercel CDN for static assets and Next.js pages.
+- Connection pooling: Use Prisma connection pool or PgBouncer; configure pool size appropriately for hosting provider limits.
+⸻
+11) Health Checks
+
+- Frontend: Vercel automatically monitors deployment health.
+- Backend: Implement `/healthz` endpoint returning `{ status: "ok" }`.
+- ML API: Implement `/health` endpoint verifying model loaded.
+- Database: Monitor connection pool and query performance via hosting provider dashboard or Prisma Studio.
+- External APIs: Monitor F1 API and OpenAI API availability and response times.
+⸻
+12) Rollback Strategy
+
+- Vercel: Use deployment history to rollback to previous deployment.
+- Render: Keep previous deployment version available for quick rollback.
+- Database: Keep migration files for rollback (test rollback process).
+- Code: Use git tags/releases to mark stable versions.
+- Document rollback procedure: steps to revert to previous working state.

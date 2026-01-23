@@ -1,0 +1,110 @@
+---
+alwaysApply: true
+---
+Scope
+
+Rules for the Node.js/Express API (backend/) and shared backend code. This is the primary backend architecture document for F1 Insight Hub.
+
+Non‑negotiables
+- No TODOs or placeholder comments. Keep modules small and testable.
+- Every route validated with zod; errors normalized; logs structured.
+- All external API calls (F1 data sources) must be cached and rate-limited.
+⸻
+1) Architecture
+backend/src/
+  app/              # express app bootstrap, middleware, router attach
+  modules/
+    races/          # controller, service, repo, schemas for race data
+    drivers/        # driver statistics and profiles
+    teams/          # team/constructor data
+    circuits/       # circuit/track information
+    insights/       # AI-generated race summaries and insights
+    predictions/    # ML model predictions integration
+    users/          # user preferences, saved data (if auth added)
+  lib/              # http (errors, validation), logger (pino/winston), cache (redis/memory)
+  routes.ts         # v1 route registration
+  config/           # environment config, database connection
+
+- Controllers (http) → Services (business) → Repos (database/external APIs). Controllers never call database or external APIs directly.
+- Export shared DTO types where frontends need them.
+- External F1 data sources abstracted behind service layer with caching.
+⸻
+2) API Style
+- REST, versioned under /v1. Response envelope:
+type ApiResponse<T> = { success: true; data: T; correlationId: string; timestamp: string }
+type ApiError = { success: false; error: { code: string; message: string; details?: unknown }, correlationId: string; timestamp: string }
+
+- Emit and return a correlationId per request (header X-Correlation-ID or generated).
+- All timestamps in ISO 8601 format.
+- Pagination: use cursor-based or offset-based consistently. Include total count when feasible.
+⸻
+3) Auth & Security
+- If authentication added: JWT access (short‑lived) + refresh via HTTP‑Only cookies or Authorization Bearer.
+- Roles: USER | ADMIN (if needed). Middleware: requireAuth(), requireRole(role).
+- CORS allow‑list from env (frontend domain).
+- Helmet, rate‑limit (IP+user), and WAF‑style reject for obvious probes.
+- Never log PII; mask sensitive identifiers.
+- API keys for external F1 data sources stored in env, never hardcoded.
+⸻
+4) External Data Integration
+- F1 data sources (Ergast API, F1 official API, etc.) abstracted behind service layer.
+- All external calls cached (Redis or in-memory with TTL). Cache keys include data type + identifier.
+- Rate limiting per external API to respect their limits.
+- Retry logic with exponential backoff for transient failures.
+- Fallback to cached data if external API fails.
+- Never expose external API keys to frontend.
+⸻
+5) Transactions & Data Consistency
+- Multi‑step operations use database transactions (Prisma transactions).
+- Background jobs (data sync, cache warming) via a queue (BullMQ or simple job queue). Keep job payloads minimal; idempotent handlers.
+- Race conditions handled with database locks or optimistic concurrency.
+⸻
+6) OpenAPI & SDK
+- Generate OpenAPI from route schemas (zod → openapi). Document all endpoints.
+- Publish a typed client SDK that frontends must use for API calls.
+⸻
+7) Errors & Logging
+- Central handler maps domain errors → HTTP codes.
+- Structured JSON logs: include correlationId, userId (if any), route, latency, error stack.
+- Production responses never include stack traces or internal error details.
+- Log levels: ERROR for failures, WARN for recoverable issues, INFO for important events, DEBUG for development.
+⸻
+8) Testing
+- Unit: services with repo/external API mocks.
+- Integration: supertest against in‑memory/real Express + test Postgres (Docker or local PostgreSQL).
+- Contract tests produce example payloads and validate OpenAPI.
+- Mock external F1 APIs in tests; never call real APIs in test suite.
+⸻
+9) CI/CD (GitHub Actions → Render/Vercel)
+- Workflow (high level):
+    1. npm/pnpm i --frozen-lockfile
+    2. Lint, typecheck, unit/integration tests
+    3. Build API
+    4. Deploy to Render (or Vercel) with env from secrets
+    5. Run database migrations (Prisma migrations) before deploy completes
+- Health check endpoint /healthz for monitoring.
+- Rollback strategy: keep previous deployment version available.
+⸻
+10) Code Quality
+- Functions preferably < 50 LOC; pure services when possible.
+- No ad‑hoc utilities in controllers—move to lib/ or modules.
+- Strong typing across layers; avoid any and wide unknown without narrowing.
+- Use TypeScript strict mode.
+- Prefer composition over inheritance.
+_____
+11) Database
+Rules for PostgreSQL schema design, migrations, indexing, and Prisma usage.
+- Table/column names: snake_case. Prisma maps to camelCase in application code.
+- Primary keys: id UUID (v7/cuid2 acceptable) or serial integer.
+- Timestamps: created_at, updated_at (default now(), trigger to update).
+- Soft deletes only when mandated; prefer strict FKs and status transitions.
+- All changes via Prisma migrations. Never edit generated migrations; create new ones.
+- Numeric fields for precise calculations (e.g., lap times, points). No floats for critical data.
+- Single Prisma Client per service process; enable connection pooling (Prisma connection pool or PgBouncer).
+- Use prisma.$transaction for multi‑row invariants; prefer interactive transactions for read‑modify‑write.
+- Select narrow columns; avoid large eager loads unless necessary.
+- Separate dev seed and test seed. Never seed prod.
+- Run prisma migrate deploy during deploy; if failure, block rollout.
+- Status transitions enforced by DB where possible (e.g., CHECK constraints).
+- Index frequently queried columns (race_id, driver_id, circuit_id, dates).
+- Use Prisma middleware for multi-tenant features if needed (or implement at application level).

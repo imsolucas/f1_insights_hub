@@ -1,0 +1,58 @@
+{
+	"project": "F1 Insight Hub",
+	"description": "A portfolio-grade full-stack application for Formula 1 fans. Provides driver, constructor, and race data, with ML-based insights and AI-generated race summaries in later phases.",
+	"phase": "Phase 1 - Backend Initialization",
+	"stacks": {
+	  "frontend": {
+		"framework": "Next.js (latest, App Router)",
+		"languages": ["TypeScript", "React"],
+		"ui": "shadcn/ui, Tailwind CSS",
+		"stateManagement": "React Query",
+		"cursorRules": [".cursor/base.mdc", ".cursor/frontend.mdc", "docs/branding.md"]
+	  },
+	  "backend": {
+		"framework": "Express",
+		"languages": ["TypeScript", "Node.js"],
+		"db": "PostgreSQL + Prisma",
+		"cursorRules": [".cursor/base.mdc", ".cursor/backend.mdc"]
+	  },
+	  "ml": {
+		"framework": "FastAPI",
+		"languages": ["Python", "scikit-learn", "pandas"],
+		"dataSource": "FastF1 API",
+		"modelType": "Gradient Boosting (GradientBoostingRegressor)",
+		"reference": "https://github.com/mar-antaya/2025_f1_predictions",
+		"cursorRules": [".cursor/base.mdc", ".cursor/ml.mdc"]
+	  },
+	  "ai": {
+		"framework": "OpenAI API",
+		"cursorRules": [".cursor/base.mdc", ".cursor/ai.mdc"]
+	  },
+	  "infra": {
+		"hosting": ["Vercel", "Render", "PostgreSQL (Render/Railway)"],
+		"cursorRules": [".cursor/base.mdc", ".cursor/infra.mdc"]
+	  }
+	},
+	"deployment": {
+	  "freeTier": true,
+	  "frontend": "Vercel Free",
+	  "backend": "Render Free",
+	  "ml": "Render Free",
+	  "database": "PostgreSQL (Render/Railway Free)"
+	},
+	"userRole": "Tech Lead / Reviewer",
+	"cursorBehavior": {
+	  "alwaysFollowMDC": true,
+	  "askClarifyingQuestions": true,
+	  "explainDecisions": true,
+	  "avoidHallucination": true,
+	  "modularCode": true
+	},
+	"notes": [
+	  "Phase 1 focuses on backend structure, Express + TypeScript setup, and initial API scaffolding.",
+	  "Frontend will be initialized separately using Next.js App Router + shadcn/ui.",
+	  "ML and AI will be implemented in Phase 2+ after basic backend and frontend are stable.",
+	  "ML predictions follow the approach from https://github.com/mar-antaya/2025_f1_predictions: FastF1 API for data, Gradient Boosting for race time predictions, MAE as primary metric."
+	]
+  }
+  

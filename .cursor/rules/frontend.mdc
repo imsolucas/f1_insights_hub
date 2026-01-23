@@ -1,0 +1,130 @@
+---
+alwaysApply: true
+---
+
+Scope
+
+These rules apply to the Next.js frontend application (frontend/) and any shared UI components or utilities.
+
+Non‑negotiables
+- No TODOs or placeholder comments. Keep components small and testable.
+- All API calls must go through typed SDK/client functions. No raw fetch in components.
+- Reference branding.mdc for all visual design decisions.
+⸻
+1) Architecture & Project Structure
+
+frontend/
+  app/                    # Next.js App Router
+    (routes)/             # Route groups for pages
+      races/              # Race pages
+      drivers/            # Driver pages
+      teams/              # Team/constructor pages
+      circuits/           # Circuit pages
+      insights/           # AI insights pages
+    _components/          # Shared components
+    _lib/                 # Utilities, API client, hooks
+    layout.tsx            # Root layout
+    loading.tsx           # Global loading UI
+    error.tsx             # Global error boundary
+  components/             # Reusable UI components (shadcn/ui)
+  lib/                    # API client, React Query setup, utils
+  types/                  # TypeScript types shared across frontend
+
+- Server Components by default; Client Components only when needed for interactivity.
+- Shared UI components (shadcn/ui) live in components/. No copy-pasting—import and reuse.
+- Brand tokens and CSS variables defined in app/globals.css. Do not hardcode colors.
+⸻
+2) Branding & Design System
+
+- Reference docs/branding.mdc at the root for all brand guidance (tokens, color usage, typography, spacing).
+- shadcn/ui + Tailwind only; no external component libraries.
+- No arbitrary hex colors in app code. Use Tailwind tokens: bg-primary, text-foreground, border, accent, etc.
+- Typography: Body text-[17px] leading-7; headings as in brand guide. Avoid tiny text.
+- Ensure responsive design so app looks good on web and mobile with dynamic component and font sizing.
+- Use Hero Icons or Lucide React for icons. Never design custom SVG icons unless absolutely necessary.
+- Follow F1-themed aesthetic: clean, data-first, developer-tool feel (similar to shadcn/ui, Linear, Vercel Dashboard).
+⸻
+3) Routing & Layout (Next.js App Router)
+
+- File structure:
+  - app/(routes)/... for main pages
+  - app/_components/ for shared layout components (header, sidebar, nav)
+  - app/_lib/ for shared utilities and hooks
+- Server/Client components: default to Server Components. Use Client only when interaction/state is required.
+- Use react-hook-form + zod for forms and schema validation.
+- Layout hierarchy: Root layout → Route group layouts → Page layouts.
+- Use loading.tsx and error.tsx at route levels for granular loading/error states.
+⸻
+4) State & Data Fetching
+
+- Fetch via a typed API client from lib/api-client.ts. No fetch scattered across components.
+- Server Components: use async/await with fetch() directly (Next.js extends fetch with caching).
+- Client Components: React Query (TanStack Query) only for server state.
+- Global state minimal; prefer React Query for caching, else local component state. Keep state colocated.
+- React Query setup: Configure queryClient with appropriate staleTime and cacheTime for F1 data (races are immutable after completion).
+- Prefetch data in Server Components when possible; hydrate Client Components with initial data.
+⸻
+5) Accessibility & Semantics
+
+- Prefer accessible selectors: getByRole, labels, aria-* attributes.
+- Focus rings must be visible and theme-aware. No removing outlines.
+- Semantic HTML: use proper heading hierarchy (h1 → h2 → h3), nav, main, article, section.
+- Keyboard navigation: ensure all interactive elements are keyboard accessible.
+- Screen reader support: provide alt text for images, aria-labels for icon-only buttons.
+⸻
+6) Components & Refactoring
+
+- Always extract repeated patterns into reusable components in components/ or app/_components/.
+- Keep components small, single-responsibility; lift logic to custom hooks (e.g., useRaceData, useDriverStats).
+- No TODOs in code/comments. Write only rationale comments when needed (the "why").
+- Component naming: PascalCase for components, camelCase for hooks and utilities.
+- Props: use TypeScript interfaces, prefer explicit prop types over any.
+⸻
+7) Error & Empty States
+
+- Provide explicit empty states with action CTAs (e.g., "No races found. Check back later.").
+- Use consistent error surfaces: inline form errors, toast for global failures, and error.tsx for route errors.
+- Loading states: use shadcn/ui Skeleton components for data loading.
+- Error boundaries: use Next.js error.tsx at route levels. Log errors to monitoring service.
+- Retry mechanisms: provide retry buttons for failed API calls in error states.
+⸻
+8) Data Visualization
+
+- Charts must be readable and accessible.
+- Prefer clarity over density: don't overcrowd charts with too much data.
+- Label axes and legends clearly.
+- Use consistent color schemes (reference brand guide).
+- Lazy load heavy charts; use Suspense boundaries.
+- Consider using libraries like recharts or visx for complex visualizations.
+⸻
+9) Performance
+
+- Use Next.js Image component for all images with proper sizing and optimization.
+- Route-level generateMetadata for SEO.
+- Code-split large sections; use dynamic imports for heavy components.
+- Avoid client-side heavy computations on initial paint; use Web Workers if needed.
+- Optimize React Query: set appropriate staleTime for F1 data (historical data rarely changes).
+- Use React.memo for expensive components that re-render frequently.
+⸻
+10) Security & Auth UI
+
+- If authentication added: enforce RBAC on nav and routes (hide inaccessible actions; redirects on guard failure).
+- Never display sensitive data without proper authorization checks.
+- Sanitize user inputs before rendering (prevent XSS).
+- Use Next.js middleware for route protection if auth is implemented.
+⸻
+11) Testing
+
+- Unit tests: test utilities, hooks, and pure functions.
+- Component tests: use React Testing Library with accessible queries (getByRole, getByLabelText).
+- E2E tests: use Playwright for critical user flows (if implemented).
+- Mock API calls in tests; never call real APIs in test suite.
+- Test error states, loading states, and empty states.
+⸻
+12) CI & Code Quality
+
+- Lint, typecheck, and unit tests must pass before deploy.
+- Disallow console.log in production builds; use proper logging service.
+- Tree-shake dead code; ensure unused imports are removed.
+- TypeScript strict mode enabled; avoid any types.
+- Meaningful variable and function names; self-documenting code preferred.

@@ -1,0 +1,164 @@
+---
+alwaysApply: true
+---
+
+Scope
+
+Rules for the Python ML service using FastAPI for inference and scikit-learn for classical machine learning models. This applies to race predictions, driver performance analysis, and other ML features.
+
+Reference Implementation: Follow the approach from https://github.com/mar-antaya/2025_f1_predictions for F1 race prediction models.
+
+Non‑negotiables
+- Training separate from inference: models trained offline, inference via FastAPI.
+- All models must be versioned and stored with metadata.
+- Interpretability over accuracy: prefer explainable models over black boxes.
+- Use FastF1 API for F1 data collection (lap times, race results, telemetry).
+⸻
+1) Stack & Architecture
+
+- Python 3.10+ for ML service.
+- FastAPI for inference API endpoints.
+- scikit-learn for classical ML models (Gradient Boosting preferred for race predictions, no deep learning unless explicitly requested).
+- FastF1 API for F1 data collection (historical race data, qualifying results, lap times, telemetry).
+- pandas for data manipulation and preprocessing.
+- numpy for numerical operations.
+- pydantic for data validation in FastAPI.
+- Model storage: use file system or cloud storage (S3) for model artifacts.
+⸻
+2) Project Structure
+
+ml-api/
+  app/
+    api/              # FastAPI routes
+    models/           # Model definitions and training code
+    services/         # Inference services, feature engineering
+    schemas/          # Pydantic models for request/response
+    utils/            # Data preprocessing, feature extraction
+  data/               # Training data (not in repo, use .gitignore)
+  models/             # Trained model artifacts (versioned)
+  notebooks/          # Jupyter notebooks for exploration
+  tests/              # Unit and integration tests
+  requirements.txt    # Python dependencies
+
+- Separate training scripts from inference API.
+- Models stored with version numbers: `model_v1.pkl`, `model_v2.pkl`.
+- Include model metadata: training date, features used, performance metrics.
+⸻
+3) Philosophy & Approach
+
+- Start simple: baseline model first (e.g., linear regression, simple decision tree).
+- For race predictions: Use Gradient Boosting (GradientBoostingRegressor) as primary model type (reference: https://github.com/mar-antaya/2025_f1_predictions).
+- Interpretability over accuracy: prefer explainable models (Gradient Boosting provides feature importance) over complex ensembles when possible.
+- Iterate based on performance: measure, improve, measure again.
+- Document model assumptions and limitations.
+⸻
+4) Data Management
+
+- Primary data source: FastF1 API for historical race data, qualifying results, lap times, and telemetry.
+- Document all data sources: where data comes from, how it's collected.
+- Training data: Use historical season data (e.g., 2024) to train models for current season predictions (e.g., 2025).
+- Handle missing values explicitly: document strategy (drop, impute, forward-fill).
+- Data validation: check for outliers, data quality issues before training.
+- Train/validation/test split required: typical 60/20/20 or 70/15/15.
+- Never use test set for model selection or hyperparameter tuning.
+- Store data preprocessing steps: transformations must be reproducible.
+⸻
+5) Feature Engineering
+
+- Extract features from F1 data using FastF1 API:
+  - Lap times and sector times
+  - Qualifying session results
+  - Historical race positions and finishing times
+  - Driver performance history
+  - Circuit characteristics (if available)
+- Normalize driver names: handle name variations consistently (e.g., "Charles Leclerc" vs "C. Leclerc").
+- Feature scaling: normalize/standardize features as needed (scikit-learn transformers).
+- Feature selection: remove irrelevant or highly correlated features.
+- Document feature definitions and transformations.
+- Save feature transformers with models for inference-time preprocessing.
+⸻
+6) Model Training
+
+- Use scikit-learn pipelines for reproducible training workflows.
+- For race predictions: Train Gradient Boosting Regressor on historical race times/positions.
+- Cross-validation for hyperparameter tuning (GridSearchCV or RandomizedSearchCV).
+- Track training metrics:
+  - Regression: Mean Absolute Error (MAE) - primary metric for race time predictions
+  - RMSE for additional context
+  - Feature importance scores from Gradient Boosting
+- Save training logs and metrics with model artifacts.
+- Set random seeds for reproducibility.
+⸻
+7) Model Versioning
+
+- Version models: `model_v1.pkl`, `model_v2.pkl`, or use semantic versioning.
+- Store model metadata in JSON alongside model file:
+  - Training date, features used, hyperparameters, performance metrics, data version.
+- Maintain model registry: track which model version is in production.
+- A/B testing: support multiple model versions for comparison.
+⸻
+8) FastAPI Inference API
+
+- RESTful endpoints: `/predict`, `/predict/race`, `/health`, `/model-info`.
+- Request/response validation with Pydantic schemas.
+- Error handling: return clear error messages for invalid inputs.
+- Response format for race predictions:
+  ```python
+  {
+    "predictions": [
+      {
+        "driver": "string",
+        "predicted_race_time": float,  # in seconds
+        "predicted_position": int,
+        "confidence": float  # optional
+      }
+    ],
+    "model_version": "string",
+    "mae": float  # Mean Absolute Error from training
+  }
+  ```
+- Health check endpoint: verify model loaded and service ready.
+- Model info endpoint: return model metadata (version, features, performance, MAE).
+⸻
+9) Inference Performance
+
+- Load models at startup: avoid loading on every request.
+- Batch predictions when possible: accept arrays of inputs.
+- Cache predictions for identical inputs (if deterministic).
+- Set request timeouts: fail fast if inference takes too long.
+- Monitor inference latency: log prediction times.
+⸻
+10) Error Handling & Monitoring
+
+- Handle model loading errors gracefully.
+- Validate input features: check types, ranges, missing values.
+- Log prediction requests: include input features (sanitized), predictions, latency.
+- Monitor model performance: track prediction distributions, confidence scores.
+- Alert on anomalies: unexpected prediction patterns or errors.
+⸻
+11) Testing
+
+- Unit tests: test feature engineering, preprocessing functions.
+- Model tests: verify model loads, produces expected output format.
+- Integration tests: test FastAPI endpoints with sample data.
+- Test edge cases: missing features, out-of-range values, invalid inputs.
+- Mock external dependencies: don't call real APIs in tests.
+⸻
+12) Deployment
+
+- Training separate from inference: train models offline, deploy artifacts.
+- Containerize ML service: Dockerfile with Python dependencies.
+- Environment variables: model path, API keys, feature flags.
+- Health checks: `/health` endpoint for deployment monitoring.
+- Rollback strategy: keep previous model versions for quick rollback.
+- Deploy to Render or similar platform; ensure sufficient memory for model loading.
+⸻
+13) Model Monitoring & Maintenance
+
+- Track prediction accuracy over time: compare predicted race times/positions to actual race results.
+- Calculate actual MAE: compare predictions to real race outcomes after each race.
+- Monitor feature drift: alert if input feature distributions change significantly.
+- Retrain periodically: schedule retraining after each race with new historical data.
+- Model comparison: compare new model versions against current production model.
+- Document model updates: changelog for model versions and improvements.
+- Per-race model versions: consider creating race-specific models (e.g., `prediction1_australia.pkl`, `prediction2_china.pkl`) as in reference implementation.
