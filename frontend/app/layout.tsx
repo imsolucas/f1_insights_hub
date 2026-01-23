@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   description: "Formula 1 race data, statistics, and insights",
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
