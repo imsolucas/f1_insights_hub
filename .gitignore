@@ -37,8 +37,8 @@ lerna-debug.log*
 # Turbo
 .turbo
 
-# Prisma
-backend/prisma/migrations/
+# Prisma (migrations must be committed for deploy)
+# backend/prisma/migrations/ — keep migrations in repo
 
 # IDE
 .vscode/
