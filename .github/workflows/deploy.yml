@@ -84,10 +84,14 @@ jobs:
         run: pnpm build --filter=backend
 
       - name: Deploy to Render
-        uses: johnbeynon/render-deploy@v1.0.0
-        with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" ]; then
+            echo "RENDER_DEPLOY_HOOK_URL not set. Skipping deployment."
+            echo "Note: Render auto-deploy is enabled, so deployment will happen automatically."
+          else
+            echo "Triggering Render deployment via deploy hook..."
+            curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          fi
 
       - name: Wait for Render deployment
         run: |
