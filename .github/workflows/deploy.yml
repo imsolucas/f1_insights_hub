@@ -132,11 +132,10 @@ jobs:
       - name: Build frontend (verification)
         run: pnpm build --filter=frontend
 
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          working-directory: ./frontend
+      - name: Note about Vercel deployment
+        run: |
+          echo "Vercel auto-deploy is enabled and will deploy automatically when code is pushed."
+          echo "No manual deployment step needed."
+          echo "Check Vercel dashboard for deployment status: https://vercel.com/dashboard"
+        # Vercel automatically deploys when code is pushed to the connected branch
+        # This avoids conflicts and "Unexpected error" issues with the vercel-action
