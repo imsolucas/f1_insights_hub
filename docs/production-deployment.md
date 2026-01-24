@@ -287,9 +287,10 @@ postgresql://user:password@hostname:5432/database_name
 
 ### 6.3 Common Issues
 
-**CORS Errors:**
-- Verify `CORS_ORIGIN` in Render matches your Vercel URL exactly
-- Include `https://` and no trailing slash
+**CORS Errors (e.g. "Cross-Origin Request Blocked"):**
+- Update `CORS_ORIGIN` in Render to your Vercel URL: `https://f1-insights-hub-frontend.vercel.app`
+- Use no trailing slash. Comma-separated for multiple origins: `http://localhost:3000,https://f1-insights-hub-frontend.vercel.app`
+- Redeploy the backend after changing env vars
 
 **Database Connection Errors:**
 - Verify `DATABASE_URL` uses Internal URL (not External)

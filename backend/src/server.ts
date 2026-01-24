@@ -15,7 +15,16 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: config.CORS_ORIGIN,
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      const normalizedOrigin = origin.replace(/\/$/, '');
+      const allowed = config.CORS_ORIGINS.some((o) => {
+        const normalized = o.replace(/\/$/, '');
+        return origin === o || origin === normalized || normalizedOrigin === normalized;
+      });
+      if (allowed) return cb(null, origin);
+      return cb(null, false);
+    },
     credentials: true,
   })
 );
