@@ -50,6 +50,30 @@ jobs:
       - name: Build
         run: pnpm build
 
+  deploy-ml-service:
+    name: Deploy ML Service to Render
+    needs: verify
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy ML Service to Render
+        run: |
+          if [ -z "${{ secrets.RENDER_ML_SERVICE_DEPLOY_HOOK_URL }}" ]; then
+            echo "RENDER_ML_SERVICE_DEPLOY_HOOK_URL not set. Skipping ML service deployment."
+            echo "Note: Render auto-deploy is enabled, so deployment will happen automatically."
+          else
+            echo "Triggering ML service deployment via deploy hook..."
+            curl -X POST "${{ secrets.RENDER_ML_SERVICE_DEPLOY_HOOK_URL }}"
+          fi
+
+      - name: Wait for ML service deployment
+        run: |
+          echo "Waiting for ML service to be ready..."
+          sleep 30
+
   deploy-backend:
     name: Deploy Backend to Render
     needs: verify

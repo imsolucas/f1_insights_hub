@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { sendSuccess, getCorrelationId } from '../utils/response';
-import { ApiError } from '../utils/errors';
 import { syncDriversFromFastF1 } from '../jobs/sync-drivers-fastf1';
 import { z } from 'zod';
 
