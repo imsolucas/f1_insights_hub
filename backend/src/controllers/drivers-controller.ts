@@ -13,6 +13,7 @@ export const getDrivers = async (req: Request, res: Response, next: NextFunction
       ...(query.season !== undefined && { season: query.season }),
       ...(query.limit !== undefined && { limit: query.limit }),
       ...(query.offset !== undefined && { offset: query.offset }),
+      ...(query.active !== undefined && { active: query.active }),
     });
 
     sendSuccess(res, { drivers, total, limit: query.limit, offset: query.offset }, correlationId);

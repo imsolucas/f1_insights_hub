@@ -36,6 +36,16 @@ class ApiClient {
     const successData = response.data as ApiResponse<T>;
     return successData.data;
   }
+
+  async post<T>(url: string, data?: unknown): Promise<T> {
+    const response = await this.client.post<ApiResponse<T> | ApiErrorResponse>(url, data);
+    if (!response.data.success) {
+      const errorData = response.data as ApiErrorResponse;
+      throw new Error(errorData.error?.message || 'API request failed');
+    }
+    const successData = response.data as ApiResponse<T>;
+    return successData.data;
+  }
 }
 
 export const apiClient = new ApiClient();
@@ -125,6 +135,10 @@ export interface Driver {
   nationality: string;
   url: string | null;
   permanentNumber: number | null;
+  driverChampionships: number;
+  constructorChampionships: number;
+  currentTeam: string | null;
+  isActive: boolean;
 }
 
 export interface DriverStats {
@@ -135,8 +149,12 @@ export interface DriverStats {
   podiums: number;
 }
 
+export interface SyncDriversResponse {
+  message: string;
+}
+
 export const driversApi = {
-  getAll: (params?: { season?: number; limit?: number; offset?: number }) =>
+  getAll: (params?: { season?: number; limit?: number; offset?: number; active?: boolean }) =>
     apiClient.get<{ drivers: Driver[]; total: number; limit?: number; offset?: number }>('/drivers', params),
   
   getById: (driverId: string) =>
@@ -147,6 +165,9 @@ export const driversApi = {
   
   getStats: (driverId: string) =>
     apiClient.get<DriverStats>(`/drivers/${driverId}/stats`),
+  
+  syncDrivers: (seasons?: number[]) =>
+    apiClient.post<SyncDriversResponse>('/sync/drivers', { seasons }),
 };
 
 // Constructors API

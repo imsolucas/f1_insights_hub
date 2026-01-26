@@ -1,0 +1,163 @@
+---
+alwaysApply: true
+---
+
+# F1 Insight Hub — Branding & UI Guidelines
+
+This document defines the visual and interaction style of the application.
+All frontend work must conform to these guidelines.
+
+---
+
+## Design Philosophy
+
+- **Prediction-market meets F1**: Data-dense, odds-friendly UI (think Polymarket, Kalshi) with F1 identity.
+- Clean, modern, data-first. Dense but scannable tables, clear probability/confidence indicators.
+- Use F1 red, white, and team colors as accents—never generic purple/blue.
+- Minimal decoration; typography and color do the work.
+
+The UI should feel:
+- **Professional** — like a serious prediction or trading surface.
+- **Calm** — dark bases, restrained accents, no visual noise.
+- **Trustworthy** — clear hierarchy, readable numbers, obvious states.
+- **F1-native** — red/white and team colors signal “this is motorsport.”
+
+---
+
+## UI Framework
+
+- shadcn/ui components
+- Tailwind CSS for layout and spacing
+- Radix primitives under the hood
+
+No custom component libraries unless approved.
+
+---
+
+## Color System
+
+### Base (Prediction-market feel)
+
+- **Background**: Dark slate/zinc (`slate-950`, `zinc-950`) or very dark gray. Avoid pure black.
+- **Surface**: Slightly lighter than background (`slate-900`, `zinc-900`) for cards, modals, dropdowns.
+- **Foreground**: High-contrast off-white (`slate-50`, `zinc-100`) for primary text.
+- **Muted**: `slate-400` / `zinc-500` for secondary text, captions, placeholders.
+
+Light mode optional: Use `zinc-50` / `zinc-100` backgrounds with `zinc-900` foreground if you support it.
+
+### Primary Accents (F1)
+
+- **Primary / F1 Red**: Bold red for CTAs, active states, key metrics, “primary” actions.
+  - Use: `red-500`–`red-600` or equivalent HSL. Ensure AA contrast on your background.
+- **White**: Use for high-emphasis text on dark red/dark surfaces, or as a secondary brand accent.
+- **Border / subtle**: `slate-700` / `zinc-800` on dark; `slate-200` on light.
+
+### Status Colors (Prediction-market semantics)
+
+- **Success / Long / Yes / Positive**: Muted green (`emerald-500`, `green-500`). Use for gains, “yes” odds, positive deltas.
+- **Destructive / Short / No / Negative**: Muted red (`red-500`, `rose-500`). Use for losses, “no” odds, negative deltas. Keep it readable, not alarming.
+- **Warning**: Amber (`amber-500`) for alerts, pending states, caution.
+- **Neutral / Inactive**: `slate-500` for disabled or inactive states.
+
+### Team Colors (F1 identity)
+
+Use for driver/team context, badges, and subtle accents—not for entire layouts.
+
+| Team        | Primary     | Use case                    |
+|------------|-------------|-----------------------------|
+| Ferrari    | `red-600`   | Ferrari drivers, team badge |
+| Mercedes   | `cyan-500`  | Mercedes drivers            |
+| Red Bull   | `blue-600`  | Red Bull drivers            |
+| McLaren    | `orange-500`| McLaren drivers             |
+| Aston Martin | `emerald-600` | Aston Martin drivers    |
+| Alpine     | `blue-400`  | Alpine drivers              |
+| Williams   | `blue-500`  | Williams drivers            |
+| Haas       | `white` / `gray-400` | Haas drivers       |
+| Kick Sauber | `red-700` / `black` | Kick Sauber drivers |
+| RB         | `blue-400`  | RB drivers                  |
+
+- Prefer **outlined** or **muted** badges (e.g. `bg-red-600/10 text-red-400 border border-red-500/30`) so team colors don’t overpower the UI.
+- Use team colors in tables, driver cards, and prediction context—not for global chrome (nav, buttons) unless it’s clearly F1-red/white.
+
+---
+
+## Typography
+
+- **Font**: System UI or Inter. Optional: a compact numeric font for odds/statistics (e.g. tabular figures).
+- **Hierarchy**:
+  - Page titles: large, bold, high contrast.
+  - Section headers: medium weight, clear spacing.
+  - Body: readable size, comfortable line-height.
+- Use **tabular numbers** for odds, probabilities, lap times, and any aligned numeric data.
+- Avoid decorative or playful fonts.
+
+---
+
+## Layout Rules
+
+- Page-based routing with consistent header and sidebar.
+- Content centered with max-width; comfortable reading length for prose.
+- **Prediction-market style**: Dense but structured. Use clear grids, tables, and cards for odds, predictions, and stats.
+- Generous spacing between major sections; tighter spacing within data blocks (tables, stat rows).
+
+---
+
+## Components
+
+### Allowed
+
+- Cards, Tables, Badges, Tabs, Tooltips, Skeleton loaders.
+- **Odds-style blocks**: Clear “yes/no” or probability displays with success/destructive accents.
+- **Team/driver badges**: Use team colors as specified above.
+
+### Required
+
+- Loading states, empty states, error states.
+- Clear **active / selected** states (e.g. F1 red underline or background tint).
+- Obvious **hover** feedback on interactive elements.
+
+---
+
+## Interaction Design
+
+- Subtle hover effects (slight background or border change).
+- No excessive animations; optional micro-motion on toggles or confident actions.
+- Immediate feedback on user actions (loading, success, error).
+- Fast perceived performance; skeleton loaders where appropriate.
+
+---
+
+## Data Visualization
+
+- Charts must be readable; prefer clarity over decoration.
+- Use **success/destructive** semantics for positive vs negative (e.g. green up, red down).
+- F1 red or team colors for series that represent specific teams/drivers.
+- Label axes and legends clearly; support keyboard/screen readers where applicable.
+
+---
+
+## Accessibility
+
+- Maintain proper contrast (WCAG AA) for all text and interactive elements.
+- Keep focus rings visible and theme-aware.
+- Use semantic HTML and ARIA where needed for custom widgets.
+
+---
+
+## Anti-Patterns (Do Not Do)
+
+- Overuse of gradients or glossy effects.
+- Excessive shadows or “dashboard clutter.”
+- Generic purple/blue as primary brand color; stick to F1 red/white and team palette.
+- Hard-coded inline styles; use design tokens / Tailwind.
+- Unstyled raw HTML elements.
+
+---
+
+## Inspiration References
+
+- **Prediction-market**: Polymarket, Kalshi, Augur — data-dense, odds-focused, professional.
+- **Product / UI**: shadcn/ui, Linear, Vercel Dashboard — clean, modern, component-driven.
+- **F1**: Official F1 graphics, team liveries — red/white, team colors, bold but readable.
+
+The UI should feel like a **prediction market built for F1**: serious, data-first, and unmistakably motorsport.

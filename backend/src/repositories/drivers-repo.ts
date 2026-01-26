@@ -2,8 +2,12 @@ import { prisma } from '../lib/prisma';
 import { Prisma } from '@prisma/client';
 
 export const driversRepo = {
-  async findAll(params?: { season?: number; limit?: number; offset?: number }) {
+  async findAll(params?: { season?: number; limit?: number; offset?: number; active?: boolean }) {
     const where: Prisma.DriverWhereInput = {};
+
+    if (params?.active !== undefined) {
+      where.isActive = params.active;
+    }
 
     const [drivers, total] = await Promise.all([
       prisma.driver.findMany({

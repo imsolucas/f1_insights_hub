@@ -1,33 +1,54 @@
 'use client';
 
+import { useState } from 'react';
 import { useDrivers } from '../../../lib/hooks/use-drivers';
-import { DriverCard } from '../../_components/driver-card';
-import { LoadingSkeleton, CardSkeleton } from '../../_components/loading-skeleton';
+import { useSyncDrivers } from '../../../lib/hooks/use-sync-drivers';
+import { StartingGrid } from '../../_components/starting-grid';
 import { ErrorState } from '../../_components/error-state';
 
 export default function DriversPage() {
-  const { data, isLoading, error, refetch } = useDrivers();
+  const [showActiveOnly, setShowActiveOnly] = useState(true);
+  const { data, isLoading, error, refetch } = useDrivers({ active: showActiveOnly ? true : undefined });
+  const syncDrivers = useSyncDrivers();
+
+  const handleSync = async () => {
+    try {
+      await syncDrivers.mutateAsync([2024, 2025]);
+      // Refetch drivers after sync
+      await refetch();
+    } catch (error) {
+      console.error('Sync failed:', error);
+    }
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-foreground mb-8">Drivers</h1>
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-4xl font-bold text-foreground uppercase tracking-wide">F1 Drivers</h1>
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showActiveOnly}
+              onChange={(e) => setShowActiveOnly(e.target.checked)}
+              className="w-4 h-4 rounded border-border accent-primary"
+            />
+            <span className="text-sm text-muted-foreground">Active only</span>
+          </label>
+          <button
+            onClick={handleSync}
+            disabled={syncDrivers.isPending}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+          >
+            {syncDrivers.isPending ? 'Syncing...' : 'Sync from FastF1'}
+          </button>
+        </div>
+      </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <CardSkeleton />
-          <CardSkeleton />
-          <CardSkeleton />
-        </div>
-      ) : error ? (
+      {error ? (
         <ErrorState message="Failed to load drivers" onRetry={() => refetch()} />
-      ) : data?.drivers && data.drivers.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data.drivers.map((driver) => (
-            <DriverCard key={driver.id} driver={driver} />
-          ))}
-        </div>
       ) : (
-        <p className="text-muted-foreground">No drivers found</p>
+        <StartingGrid drivers={data?.drivers || []} isLoading={isLoading} />
       )}
     </div>
   );

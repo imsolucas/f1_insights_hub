@@ -25,9 +25,10 @@ backend/src/
   routes.ts         # v1 route registration
   config/           # environment config, database connection
 
-- Controllers (http) → Services (business) → Repos (database/external APIs). Controllers never call database or external APIs directly.
+- Controllers (http) → Services (business) → Repos (database). Controllers never call database directly.
 - Export shared DTO types where frontends need them.
-- External F1 data sources abstracted behind service layer with caching.
+- F1 data comes from database (populated by Python FastF1 service); no direct external API calls from Express backend.
+- FastF1 Architecture: Python service (ML service or dedicated data-sync) uses FastF1 to fetch F1 data and stores in PostgreSQL. Express reads from database via Prisma. This keeps Express as pure Node.js while leveraging FastF1's Python capabilities.
 ⸻
 2) API Style
 - REST, versioned under /v1. Response envelope:
@@ -47,12 +48,15 @@ type ApiError = { success: false; error: { code: string; message: string; detail
 - API keys for external F1 data sources stored in env, never hardcoded.
 ⸻
 4) External Data Integration
-- F1 data sources (Ergast API, F1 official API, etc.) abstracted behind service layer.
-- All external calls cached (Redis or in-memory with TTL). Cache keys include data type + identifier.
-- Rate limiting per external API to respect their limits.
-- Retry logic with exponential backoff for transient failures.
-- Fallback to cached data if external API fails.
-- Never expose external API keys to frontend.
+- Primary F1 data source: FastF1 (Python library) - NOTE: Ergast API is deprecated (end of 2024).
+- Architecture: FastF1 runs in Python service (ML service or dedicated data sync service) and populates PostgreSQL database.
+- Express backend reads F1 data from database (not directly from FastF1, as FastF1 is Python-only).
+- All database queries cached (Redis or in-memory with TTL). Cache keys include data type + identifier.
+- Rate limiting: FastF1 has rate limits; respect them in the Python service. Express backend should not directly call FastF1.
+- Retry logic with exponential backoff for transient failures in Python data service.
+- Fallback to cached database data if data sync service fails.
+- Never expose internal service URLs or API keys to frontend.
+- Data sync: Python service runs scheduled jobs to fetch latest F1 data from FastF1 and update database.
 ⸻
 5) Transactions & Data Consistency
 - Multi‑step operations use database transactions (Prisma transactions).
@@ -73,7 +77,7 @@ type ApiError = { success: false; error: { code: string; message: string; detail
 - Unit: services with repo/external API mocks.
 - Integration: supertest against in‑memory/real Express + test Postgres (Docker or local PostgreSQL).
 - Contract tests produce example payloads and validate OpenAPI.
-- Mock external F1 APIs in tests; never call real APIs in test suite.
+- Mock database queries in tests; never call real database or external services in test suite.
 ⸻
 9) CI/CD (GitHub Actions → Render/Vercel)
 - Workflow (high level):

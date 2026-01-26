@@ -11,23 +11,27 @@ datasource db {
 }
 
 model Driver {
-  id              String   @id @default(cuid())
-  driverId        String   @unique @map("driver_id")
-  code            String?
-  forename        String
-  surname         String
-  dateOfBirth     DateTime? @map("date_of_birth")
-  nationality     String
-  url             String?
-  permanentNumber Int?     @map("permanent_number")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id                       String    @id @default(cuid())
+  driverId                 String    @unique @map("driver_id")
+  code                     String?
+  forename                 String
+  surname                  String
+  dateOfBirth              DateTime? @map("date_of_birth")
+  nationality              String
+  url                      String?
+  permanentNumber          Int?      @map("permanent_number")
+  driverChampionships      Int       @default(0) @map("driver_championships")
+  constructorChampionships Int       @default(0) @map("constructor_championships")
+  currentTeam              String?   @map("current_team")
+  isActive                 Boolean   @default(true) @map("is_active")
+  createdAt                DateTime  @default(now()) @map("created_at")
+  updatedAt                DateTime  @updatedAt @map("updated_at")
 
-  raceResults      RaceResult[]
+  raceResults       RaceResult[]
   qualifyingResults QualifyingResult[]
 
-  @@map("drivers")
   @@index([driverId])
+  @@map("drivers")
 }
 
 model Constructor {
@@ -39,30 +43,30 @@ model Constructor {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  raceResults      RaceResult[]
+  raceResults       RaceResult[]
   qualifyingResults QualifyingResult[]
 
-  @@map("constructors")
   @@index([constructorId])
+  @@map("constructors")
 }
 
 model Circuit {
-  id         String   @id @default(cuid())
-  circuitId  String   @unique @map("circuit_id")
-  name       String
-  location   String
-  country    String
-  lat        Float?
-  long       Float?
-  alt        Int?
-  url        String?
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  id        String   @id @default(cuid())
+  circuitId String   @unique @map("circuit_id")
+  name      String
+  location  String
+  country   String
+  lat       Float?
+  long      Float?
+  alt       Int?
+  url       String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   races Race[]
 
-  @@map("circuits")
   @@index([circuitId])
+  @@map("circuits")
 }
 
 model Season {
@@ -71,42 +75,42 @@ model Season {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("seasons")
   @@index([year])
+  @@map("seasons")
 }
 
 model Race {
-  id              String    @id @default(cuid())
-  season          Int
-  round           Int
-  raceName        String    @map("race_name")
-  circuitId       String    @map("circuit_id")
-  date            DateTime
-  time            String?
-  url             String?
-  sprintDate      DateTime? @map("sprint_date")
-  sprintTime      String?  @map("sprint_time")
-  qualifyingDate  DateTime? @map("qualifying_date")
-  qualifyingTime  String?   @map("qualifying_time")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
+  id             String    @id @default(cuid())
+  season         Int
+  round          Int
+  raceName       String    @map("race_name")
+  circuitId      String    @map("circuit_id")
+  date           DateTime
+  time           String?
+  url            String?
+  sprintDate     DateTime? @map("sprint_date")
+  sprintTime     String?   @map("sprint_time")
+  qualifyingDate DateTime? @map("qualifying_date")
+  qualifyingTime String?   @map("qualifying_time")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
 
-  circuit           Circuit           @relation(fields: [circuitId], references: [id])
-  raceResults        RaceResult[]
-  qualifyingResults  QualifyingResult[]
+  circuit           Circuit            @relation(fields: [circuitId], references: [id])
+  raceResults       RaceResult[]
+  qualifyingResults QualifyingResult[]
 
-  @@map("races")
+  @@unique([season, round])
   @@index([season])
   @@index([circuitId])
   @@index([date])
-  @@unique([season, round])
+  @@map("races")
 }
 
 model RaceResult {
-  id              String    @id @default(cuid())
-  raceId          String    @map("race_id")
-  driverId        String    @map("driver_id")
-  constructorId   String    @map("constructor_id")
+  id              String   @id @default(cuid())
+  raceId          String   @map("race_id")
+  driverId        String   @map("driver_id")
+  constructorId   String   @map("constructor_id")
   position        Int?
   points          Float
   grid            Int?
@@ -114,41 +118,41 @@ model RaceResult {
   status          String
   time            String?
   milliseconds    Int?
-  fastestLap      Int?       @map("fastest_lap")
-  fastestLapTime  String?    @map("fastest_lap_time")
-  fastestLapSpeed Float?     @map("fastest_lap_speed")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-
-  race        Race        @relation(fields: [raceId], references: [id], onDelete: Cascade)
-  driver      Driver      @relation(fields: [driverId], references: [id])
-  constructor Constructor  @relation(fields: [constructorId], references: [id])
-
-  @@map("race_results")
-  @@index([raceId])
-  @@index([driverId])
-  @@index([constructorId])
-  @@index([raceId, driverId])
-}
-
-model QualifyingResult {
-  id            String   @id @default(cuid())
-  raceId        String   @map("race_id")
-  driverId       String   @map("driver_id")
-  constructorId String   @map("constructor_id")
-  position       Int
-  q1             String?
-  q2             String?
-  q3             String?
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  fastestLap      Int?     @map("fastest_lap")
+  fastestLapTime  String?  @map("fastest_lap_time")
+  fastestLapSpeed Float?   @map("fastest_lap_speed")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   race        Race        @relation(fields: [raceId], references: [id], onDelete: Cascade)
   driver      Driver      @relation(fields: [driverId], references: [id])
   constructor Constructor @relation(fields: [constructorId], references: [id])
 
-  @@map("qualifying_results")
+  @@index([raceId])
+  @@index([driverId])
+  @@index([constructorId])
+  @@index([raceId, driverId])
+  @@map("race_results")
+}
+
+model QualifyingResult {
+  id            String   @id @default(cuid())
+  raceId        String   @map("race_id")
+  driverId      String   @map("driver_id")
+  constructorId String   @map("constructor_id")
+  position      Int
+  q1            String?
+  q2            String?
+  q3            String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  race        Race        @relation(fields: [raceId], references: [id], onDelete: Cascade)
+  driver      Driver      @relation(fields: [driverId], references: [id])
+  constructor Constructor @relation(fields: [constructorId], references: [id])
+
   @@index([raceId])
   @@index([driverId])
   @@index([raceId, driverId])
+  @@map("qualifying_results")
 }

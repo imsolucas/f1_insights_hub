@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: f1-insight-ml-service
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: FASTF1_CACHE_DIR
+        value: /opt/render/project/cache
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: LOG_LEVEL
+        value: INFO
+      - key: ALLOWED_ORIGINS
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true

@@ -82,37 +82,51 @@
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Dark slate/zinc backgrounds per branding.mdc */
+  --background: oklch(0.05 0 0); /* slate-950 equivalent */
+  --foreground: oklch(0.98 0 0); /* slate-50 equivalent */
+  --card: oklch(0.10 0 0); /* slate-900 equivalent */
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.10 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+  /* F1 Red primary accent */
+  --primary: oklch(0.55 0.22 25); /* red-600 */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.20 0 0); /* slate-800 */
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.20 0 0); /* slate-800 */
+  --muted-foreground: oklch(0.50 0 0); /* slate-400 */
+  --accent: oklch(0.20 0 0);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.55 0.22 25); /* red-500 */
+  --border: oklch(0.25 0 0); /* slate-700 */
+  --input: oklch(0.25 0 0);
+  --ring: oklch(0.55 0.22 25); /* F1 red */
+  --chart-1: oklch(0.55 0.22 25);
+  --chart-2: oklch(0.60 0.16 155); /* emerald-600 */
+  --chart-3: oklch(0.70 0.14 195); /* cyan-500 */
+  --chart-4: oklch(0.68 0.18 45); /* orange-500 */
+  --chart-5: oklch(0.45 0.13 252); /* blue-600 */
+  --sidebar: oklch(0.10 0 0);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.55 0.22 25);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.20 0 0);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.25 0 0);
+  --sidebar-ring: oklch(0.55 0.22 25);
+  
+  /* Team color tokens for F1 teams */
+  --team-ferrari: oklch(0.55 0.22 25); /* red-600 */
+  --team-mercedes: oklch(0.70 0.14 195); /* cyan-500 */
+  --team-redbull: oklch(0.45 0.13 252); /* blue-600 */
+  --team-mclaren: oklch(0.68 0.18 45); /* orange-500 */
+  --team-astonmartin: oklch(0.60 0.16 155); /* emerald-600 */
+  --team-alpine: oklch(0.65 0.13 230); /* blue-400 */
+  --team-williams: oklch(0.55 0.15 245); /* blue-500 */
+  --team-haas: oklch(0.85 0 0); /* gray-400 */
+  --team-sauber: oklch(0.40 0.18 25); /* red-700 */
+  --team-rb: oklch(0.65 0.13 230); /* blue-400 */
 }
 
 @layer base {
@@ -123,3 +137,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Team color utility classes */
+.team-ferrari { background-color: var(--team-ferrari); }
+.team-mercedes { background-color: var(--team-mercedes); }
+.team-redbull { background-color: var(--team-redbull); }
+.team-mclaren { background-color: var(--team-mclaren); }
+.team-astonmartin { background-color: var(--team-astonmartin); }
+.team-alpine { background-color: var(--team-alpine); }
+.team-williams { background-color: var(--team-williams); }
+.team-haas { background-color: var(--team-haas); }
+.team-sauber { background-color: var(--team-sauber); }
+.team-rb { background-color: var(--team-rb); }

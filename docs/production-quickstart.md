@@ -27,7 +27,38 @@ Quick reference checklist for deploying to production.
   - Plan: Free (90 days) or Starter ($7/month)
   - **Save Internal Database URL** (you'll need this!)
 
-### Phase 2: Backend Setup (10 minutes)
+### Phase 2: ML Service Setup (Optional - 5 minutes)
+
+> **Note:** Deploy this if you're using FastF1 data synchronization.
+
+- [ ] **Create Python Web Service on Render**
+  - Dashboard → New + → Web Service
+  - Connect GitHub repository
+  - Name: `f1-insight-ml-service`
+  - Root Directory: `ml` (important!)
+  - Runtime: Python 3
+  
+- [ ] **Configure Build Command:**
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+- [ ] **Configure Start Command:**
+  ```bash
+  uvicorn app.main:app --host 0.0.0.0 --port $PORT
+  ```
+
+- [ ] **Add Environment Variables:**
+  - `DATABASE_URL` = `[Internal Database URL from Phase 1]`
+  - `FASTF1_CACHE_DIR` = `/opt/render/project/cache`
+  - `PORT` = `10000`
+  - `LOG_LEVEL` = `INFO`
+  - `ALLOWED_ORIGINS` = `https://your-backend.onrender.com` (update after Phase 3)
+
+- [ ] **Save ML Service URL**
+  - Copy service URL: `https://f1-insight-ml-service.onrender.com`
+
+### Phase 3: Backend Setup (10 minutes)
 
 - [ ] **Create Web Service on Render**
   - Dashboard → New + → Web Service
@@ -49,14 +80,15 @@ Quick reference checklist for deploying to production.
   - `NODE_ENV` = `production`
   - `PORT` = `10000`
   - `DATABASE_URL` = `[Internal Database URL from Phase 1]`
-  - `CORS_ORIGIN` = `https://your-frontend.vercel.app` (update after Phase 3)
+  - `CORS_ORIGIN` = `https://your-frontend.vercel.app` (update after Phase 4)
   - `ERGAST_API_BASE_URL` = `https://ergast.com/api/f1`
+  - `PYTHON_ML_SERVICE_URL` = `https://your-ml-service.onrender.com` (if ML service deployed)
 
 - [ ] **Save Service ID and API Key**
   - Settings → Service ID (copy)
   - Account → API Keys → Create new (copy)
 
-### Phase 3: Frontend Setup (5 minutes)
+### Phase 4: Frontend Setup (5 minutes)
 
 - [ ] **Import Project to Vercel**
   - Dashboard → Add New → Project
@@ -82,7 +114,7 @@ Quick reference checklist for deploying to production.
   - Update `CORS_ORIGIN` = `[Your Vercel URL]`
   - Save (auto-redeploys)
 
-### Phase 4: GitHub Actions Setup (5 minutes)
+### Phase 5: GitHub Actions Setup (5 minutes)
 
 - [ ] **Add GitHub Secrets**
   - Repository → Settings → Secrets and variables → Actions
@@ -116,6 +148,7 @@ After deployment, save:
 - [ ] Render Database Internal URL
 - [ ] Render Service ID
 - [ ] Render API Key
+- [ ] ML Service URL: `https://your-ml-service.onrender.com` (if deployed)
 - [ ] Backend URL: `https://your-service.onrender.com`
 - [ ] Vercel Project ID
 - [ ] Vercel Org ID
@@ -169,6 +202,7 @@ https://your-backend.onrender.com/api-docs
 
 For detailed step-by-step instructions, see:
 - [Complete Production Deployment Guide](./production-deployment.md)
+- [ML Service Deployment Guide](./ml-service-deployment.md) (if using FastF1)
 - [CI/CD Setup Guide](./ci-cd-setup.md)
 - [GitHub Secrets Guide](./github-secrets-guide.md)
 

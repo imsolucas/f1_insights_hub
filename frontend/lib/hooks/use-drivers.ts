@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { driversApi, Driver, DriverStats, RaceResult } from '../api-client';
 
-export function useDrivers(params?: { season?: number; limit?: number; offset?: number }) {
+export function useDrivers(params?: { season?: number; limit?: number; offset?: number; active?: boolean }) {
   return useQuery({
     queryKey: ['drivers', params],
     queryFn: () => driversApi.getAll(params),

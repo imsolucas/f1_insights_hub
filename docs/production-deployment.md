@@ -88,9 +88,29 @@ postgresql://user:password@hostname:5432/database_name
 
 ---
 
-## Step 3: Deploy Backend API on Render
+## Step 3: Deploy ML Service on Render (Optional but Recommended)
 
-### 3.1 Create Web Service
+> **Note:** If you're using FastF1 data synchronization, deploy the ML service before the backend.
+
+See **[ML Service Deployment Guide](./ml-service-deployment.md)** for complete instructions.
+
+**Quick Summary:**
+1. Create Python Web Service on Render
+2. Root Directory: `ml`
+3. Build: `pip install -r requirements.txt`
+4. Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+5. Environment Variables:
+   - `DATABASE_URL` (Internal URL)
+   - `FASTF1_CACHE_DIR=/opt/render/project/cache`
+   - `ALLOWED_ORIGINS` (Backend URL)
+
+**Save the ML service URL** (e.g., `https://f1-insight-ml-service.onrender.com`) for backend configuration.
+
+---
+
+## Step 4: Deploy Backend API on Render
+
+### 4.1 Create Web Service
 
 1. **In Render Dashboard**
    - Click **New +** → **Web Service**
@@ -124,6 +144,7 @@ postgresql://user:password@hostname:5432/database_name
    | `DATABASE_URL` | `[Internal Database URL from Step 2.2]` | Use **Internal** URL |
    | `CORS_ORIGIN` | `https://your-frontend.vercel.app` | Update after frontend deployment |
    | `ERGAST_API_BASE_URL` | `https://ergast.com/api/f1` | |
+   | `PYTHON_ML_SERVICE_URL` | `https://your-ml-service.onrender.com` | ML service URL (if deployed) |
    | `OPENAI_API_KEY` | `[Your OpenAI API key]` | Optional, for Phase 3 AI features |
 
    **Important Notes:**
@@ -138,13 +159,13 @@ postgresql://user:password@hostname:5432/database_name
    - Watch the build logs for any errors
    - Service URL will be: `https://your-service-name.onrender.com`
 
-### 3.2 Get Service ID for GitHub Actions
+### 4.2 Get Service ID for GitHub Actions
 
 1. **In Render Dashboard**, click on your web service
 2. **Go to Settings** tab
 3. **Copy the "Service ID"** (you'll need this for GitHub secrets)
 
-### 3.3 Get Render API Key
+### 4.3 Get Render API Key
 
 1. **In Render Dashboard**, click your profile icon (top right)
 2. **Go to Account Settings** → **API Keys**
@@ -154,9 +175,9 @@ postgresql://user:password@hostname:5432/database_name
 
 ---
 
-## Step 4: Deploy Frontend on Vercel
+## Step 5: Deploy Frontend on Vercel
 
-### 4.1 Import Project
+### 5.1 Import Project
 
 1. **Go to [vercel.com/dashboard](https://vercel.com/dashboard)**
 2. **Click "Add New..."** → **Project**
@@ -164,7 +185,7 @@ postgresql://user:password@hostname:5432/database_name
    - Select `f1-insight-hub` repository
    - Click **Import**
 
-### 4.2 Configure Project
+### 5.2 Configure Project
 
 1. **Project Settings:**
    - **Project Name**: `f1-insight-hub` (or your preferred name)
@@ -194,7 +215,7 @@ postgresql://user:password@hostname:5432/database_name
    - Vercel will build and deploy automatically
    - Your site will be at: `https://your-project.vercel.app`
 
-### 4.3 Get Vercel IDs for GitHub Actions
+### 5.3 Get Vercel IDs for GitHub Actions
 
 1. **In Vercel Dashboard**, go to your project
 2. **Go to Settings** → **General**
@@ -205,7 +226,7 @@ postgresql://user:password@hostname:5432/database_name
    - **Create Token**: Name it `github-actions`
    - **Copy the token** (save securely - you can't view it again)
 
-### 4.4 Update Backend CORS
+### 5.4 Update Backend CORS
 
 1. **Go back to Render Dashboard**
 2. **Edit your backend service**
@@ -215,9 +236,9 @@ postgresql://user:password@hostname:5432/database_name
 
 ---
 
-## Step 5: Configure GitHub Actions Secrets
+## Step 6: Configure GitHub Actions Secrets
 
-### 5.1 Add Secrets to GitHub
+### 6.1 Add Secrets to GitHub
 
 1. **Go to your GitHub repository**
 2. **Settings** → **Secrets and variables** → **Actions**
@@ -236,7 +257,7 @@ postgresql://user:password@hostname:5432/database_name
 
 5. **Save each secret**
 
-### 5.2 Test GitHub Actions
+### 6.2 Test GitHub Actions
 
 1. **Make a small change** (e.g., update README)
 2. **Commit and push:**
@@ -251,9 +272,9 @@ postgresql://user:password@hostname:5432/database_name
 
 ---
 
-## Step 6: Verify Production Deployment
+## Step 7: Verify Production Deployment
 
-### 6.1 Test Backend API
+### 7.1 Test Backend API
 
 1. **Check Swagger Documentation:**
    - Visit: `https://your-backend.onrender.com/api-docs`
@@ -271,7 +292,7 @@ postgresql://user:password@hostname:5432/database_name
    ```
    - Should return: `{"success": true, "data": {"status": "OK"}, ...}`
 
-### 6.2 Test Frontend
+### 7.2 Test Frontend
 
 1. **Visit your Vercel URL:**
    - `https://your-project.vercel.app`
@@ -285,7 +306,7 @@ postgresql://user:password@hostname:5432/database_name
    - Open browser console (F12)
    - Look for any API errors or CORS issues
 
-### 6.3 Common Issues
+### 7.3 Common Issues
 
 **CORS Errors (e.g. "Cross-Origin Request Blocked"):**
 - Update `CORS_ORIGIN` in Render to your Vercel URL: `https://f1-insights-hub-frontend.vercel.app`
@@ -308,9 +329,9 @@ postgresql://user:password@hostname:5432/database_name
 
 ---
 
-## Step 7: Configure Custom Domains (Optional)
+## Step 8: Configure Custom Domains (Optional)
 
-### 7.1 Backend Custom Domain (Render)
+### 8.1 Backend Custom Domain (Render)
 
 1. **In Render Dashboard**, go to your service
 2. **Settings** → **Custom Domains**
@@ -318,7 +339,7 @@ postgresql://user:password@hostname:5432/database_name
 4. **Follow DNS configuration instructions**
 5. **Update `CORS_ORIGIN`** to include new domain
 
-### 7.2 Frontend Custom Domain (Vercel)
+### 8.2 Frontend Custom Domain (Vercel)
 
 1. **In Vercel Dashboard**, go to your project
 2. **Settings** → **Domains**
@@ -328,9 +349,9 @@ postgresql://user:password@hostname:5432/database_name
 
 ---
 
-## Step 8: Monitor and Maintain
+## Step 9: Monitor and Maintain
 
-### 8.1 Set Up Monitoring
+### 9.1 Set Up Monitoring
 
 **Render:**
 - Check service logs regularly
@@ -342,7 +363,7 @@ postgresql://user:password@hostname:5432/database_name
 - Monitor analytics (if enabled)
 - Set up deployment notifications
 
-### 8.2 Database Maintenance
+### 9.2 Database Maintenance
 
 1. **Regular Backups:**
    - Render PostgreSQL: Automatic daily backups (Starter plan+)
@@ -352,7 +373,7 @@ postgresql://user:password@hostname:5432/database_name
    - Render Dashboard → Database → Metrics
    - Free tier: 1GB limit
 
-### 8.3 Cost Management
+### 9.3 Cost Management
 
 **Free Tier Limits:**
 - **Render**: Services spin down after 15 min inactivity

@@ -1,0 +1,16 @@
+{
+  "name": "ml",
+  "version": "1.0.0",
+  "private": true,
+  "description": "F1 Insight Hub ML Service - FastF1 data synchronization",
+  "scripts": {
+    "dev": "python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "start": "python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}",
+    "build": "echo 'No build step required for Python service'",
+    "lint": "echo 'Linting not configured for Python service'",
+    "typecheck": "echo 'Type checking not configured for Python service'"
+  },
+  "engines": {
+    "python": ">=3.11.0"
+  }
+}

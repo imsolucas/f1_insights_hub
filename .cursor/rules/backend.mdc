@@ -27,11 +27,34 @@ backend/src/
   routes.ts         # v1 route registration
   config/           # environment config, database connection
 
-- Controllers (http) → Services (business) → Repos (database/external APIs). Controllers never call database or external APIs directly.
+- Controllers (http) → Services (business) → Repos (database). Controllers never call database directly.
 - Export shared DTO types where frontends need them.
-- External F1 data sources abstracted behind service layer with caching.
+- F1 data comes from database (populated by Python FastF1 service); no direct external API calls from Express backend.
 ⸻
-2) API Design
+2) FastF1 Data Architecture
+
+Since FastF1 is Python-only and Express backend is Node.js, use this architecture:
+
+**Option A (Recommended): Database-First Approach**
+- Python service (ML service or dedicated `data-sync` service) uses FastF1 to fetch F1 data
+- Python service stores data in PostgreSQL database
+- Express backend reads from database via Prisma
+- Python service runs scheduled jobs (cron/scheduler) to sync latest F1 data
+- Benefits: Express stays pure Node.js, data is always available, caching works at database level
+
+**Option B: Microservice API**
+- Python FastAPI service exposes FastF1 data via REST endpoints
+- Express backend calls Python service's REST API
+- Python service handles FastF1 rate limiting and caching
+- Benefits: Real-time data, but adds network latency and service dependency
+
+**Implementation Notes:**
+- Express backend should NOT directly call FastF1 (it's Python-only)
+- All F1 data access in Express goes through Prisma database queries
+- Python service handles FastF1 authentication, rate limiting, and error handling
+- Database schema should store all F1 data needed by Express API endpoints
+⸻
+3) API Design
 
 - RESTful endpoints, versioned under /v1.
 - Consistent response shapes:
@@ -49,17 +72,20 @@ backend/src/
 - Pagination: use cursor-based or offset-based consistently. Include total count when feasible.
 - Filtering and sorting: use query parameters (e.g., ?year=2024&sort=date&order=desc).
 ⸻
-3) External Data Integration
+4) External Data Integration
 
-- F1 data sources (Ergast API, F1 official API, etc.) abstracted behind service layer.
-- All external calls cached (Redis or in-memory with TTL). Cache keys include data type + identifier.
-- Rate limiting per external API to respect their limits (e.g., Ergast API: 4 calls/second).
-- Retry logic with exponential backoff for transient failures (max 3 retries).
-- Fallback to cached data if external API fails.
-- Never expose external API keys to frontend.
-- Cache invalidation strategy: historical race data rarely changes, cache aggressively; current season data cache for shorter periods.
+- Primary F1 data source: FastF1 (Python library) via ML service or dedicated data sync service.
+- Architecture: FastF1 (Python) fetches F1 data and stores in PostgreSQL database; Express backend reads from database.
+- Alternative: If FastF1 is called directly from Express, use a Python microservice that exposes FastF1 data via REST API.
+- All database queries cached (Redis or in-memory with TTL). Cache keys include data type + identifier.
+- Rate limiting: FastF1 has rate limits; respect them in the Python service. Express backend should not directly call FastF1.
+- Retry logic with exponential backoff for transient failures (max 3 retries) in Python data service.
+- Fallback to cached database data if data sync service fails.
+- Never expose internal service URLs or API keys to frontend.
+- Cache invalidation strategy: historical race data rarely changes, cache aggressively; current season data cache for shorter periods (refresh after each race weekend).
+- Data sync: Python service runs scheduled jobs to fetch latest F1 data from FastF1 and update database.
 ⸻
-4) Database (PostgreSQL via Prisma)
+5) Database (PostgreSQL via Prisma)
 
 - Table/column names: snake_case. Prisma maps to camelCase in application code.
 - Primary keys: id UUID (v7/cuid2 acceptable) or serial integer.
@@ -71,7 +97,7 @@ backend/src/
 - Transactions: use prisma.$transaction for multi‑row invariants; prefer interactive transactions for read‑modify‑write.
 - Prisma Client: single instance per service process; use Prisma Client extensions for shared logic.
 ⸻
-5) Error Handling
+6) Error Handling
 
 - Centralized error middleware maps domain errors → HTTP codes.
 - Structured JSON logs: include correlationId, userId (if any), route, latency, error stack.
@@ -80,14 +106,14 @@ backend/src/
 - Custom error classes for different error types (ValidationError, NotFoundError, ExternalAPIError, etc.).
 - No silent failures; always log errors with context.
 ⸻
-6) Validation & Input Sanitization
+7) Validation & Input Sanitization
 
 - All route inputs validated with zod schemas.
 - Sanitize user inputs to prevent injection attacks.
 - Validate query parameters, request body, and route parameters.
 - Return clear validation error messages (field-level errors when possible).
 ⸻
-7) Security
+8) Security
 
 - CORS allow‑list from env (frontend domain).
 - Helmet for security headers.
@@ -97,7 +123,7 @@ backend/src/
 - API keys for external services stored in env, never hardcoded.
 - Use HTTPS in production (handled by Render/Vercel).
 ⸻
-8) Logging & Monitoring
+9) Logging & Monitoring
 
 - Structured JSON logs (pino or winston with JSON formatter).
 - Include: correlationId, timestamp, level, message, route, method, userId (if any), latency, error details.
@@ -105,15 +131,15 @@ backend/src/
 - Set up log aggregation (e.g., Render logs, or external service like Logtail).
 - Monitor: response times, error rates, external API failures, cache hit rates.
 ⸻
-9) Testing
+10) Testing
 
 - Unit: services with repo/external API mocks.
 - Integration: supertest against in‑memory/real Express + test Postgres (Docker or local PostgreSQL).
-- Mock external F1 APIs in tests; never call real APIs in test suite.
+- Mock database queries in tests; never call real database or external services in test suite.
 - Test error cases: invalid inputs, external API failures, database errors.
 - Test caching behavior: verify cache hits/misses, TTL expiration.
 ⸻
-10) Code Quality
+11) Code Quality
 
 - Functions preferably < 50 LOC; pure services when possible.
 - No ad‑hoc utilities in controllers—move to lib/ or modules.
