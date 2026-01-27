@@ -1,22 +1,23 @@
+import { UnifiedSyncService } from '../services/sync/unified-sync-service';
 import { ErgastService } from '../services/ergast/ergast-service';
 import { logger } from '../utils/logger';
 
 export async function syncCurrentSeason(): Promise<void> {
-  const ergastService = new ErgastService();
+  const syncService = new UnifiedSyncService();
   const currentYear = new Date().getFullYear();
 
   try {
     logger.info(`Starting sync for current season (${currentYear})`);
 
     // Sync circuits (one-time, but safe to run multiple times)
-    await ergastService.fetchAndSyncCircuits();
+    await syncService.fetchAndSyncCircuits();
 
     // Sync current season schedule
-    await ergastService.fetchAndSyncRaces(currentYear);
+    await syncService.fetchAndSyncRaces(currentYear);
 
-    // Sync current season drivers and constructors
-    await ergastService.fetchAndSyncDrivers(currentYear);
-    await ergastService.fetchAndSyncConstructors(currentYear);
+    // Sync current season drivers and constructors (with fallback to multiple sources)
+    await syncService.fetchAndSyncDrivers(currentYear);
+    await syncService.fetchAndSyncConstructors(currentYear);
 
     logger.info(`Completed sync for current season (${currentYear})`);
   } catch (error) {

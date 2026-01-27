@@ -10,7 +10,8 @@ Quick reference for setting up required secrets for CI/CD.
 |------------|-------------|---------------|
 | `RENDER_SERVICE_ID` | Your Render backend service ID | Render Dashboard → Your Service → Settings → Service ID |
 | `RENDER_API_KEY` | Your Render API key | Render Dashboard → Account Settings → API Keys → Create API Key |
-| `DATABASE_URL` | PostgreSQL connection string | Your Render PostgreSQL database connection string |
+| `RENDER_DEPLOY_HOOK_URL` | Backend deploy hook URL (optional) | Render Dashboard → Your Service → Settings → Manual Deploy Hook |
+| `DATABASE_URL` | PostgreSQL connection string | Render Dashboard → Database → Internal Database URL |
 
 ### Frontend (Vercel)
 
@@ -35,8 +36,16 @@ Quick reference for setting up required secrets for CI/CD.
    - Enter the secret value
    - Click **Add secret**
 
-4. **Verify Secrets**
-   - All 6 secrets should be listed
+4. **Get Deploy Hook URLs (Optional)**
+   - See [Render Deploy Hook Guide](./render-deploy-hook-guide.md) for detailed instructions
+   - **Quick steps:**
+     1. Go to Render Dashboard → Your Service → Settings tab
+     2. Scroll to "Manual Deploy Hook" section
+     3. Copy the URL
+     4. Add as GitHub secret: `RENDER_DEPLOY_HOOK_URL` or `RENDER_ML_SERVICE_DEPLOY_HOOK_URL`
+
+5. **Verify Secrets**
+   - All required secrets should be listed (6-7 depending on whether you use deploy hooks)
    - Secrets are encrypted and cannot be viewed after creation
 
 ## Important Notes

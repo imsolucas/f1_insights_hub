@@ -9,6 +9,7 @@ interface EnvConfig {
   CORS_ORIGIN: string;
   CORS_ORIGINS: string[];
   ERGAST_API_BASE_URL: string;
+  F1_API_BASE_URL: string;
 }
 
 function getEnvVar(key: string, defaultValue?: string): string {
@@ -40,4 +41,5 @@ export const config: EnvConfig = {
   CORS_ORIGIN: corsOriginRaw,
   CORS_ORIGINS: corsOrigins.length > 0 ? corsOrigins : ['http://localhost:3000'],
   ERGAST_API_BASE_URL: getEnvVar('ERGAST_API_BASE_URL', 'https://ergast.com/api/f1'),
+  F1_API_BASE_URL: getEnvVar('F1_API_BASE_URL', 'https://f1api.dev'),
 };

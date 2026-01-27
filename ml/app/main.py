@@ -50,6 +50,8 @@ async def root():
         "endpoints": {
             "health": "/health",
             "sync_drivers": "/api/sync/drivers",
+            "sync_teams": "/api/sync/teams",
+            "sync_lineups": "/api/sync/lineups",
             "info": "/api/sync/info",
         },
     }

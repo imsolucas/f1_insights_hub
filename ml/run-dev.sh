@@ -1,11 +1,26 @@
 #!/bin/bash
 # Development script that ensures venv is activated
 
-cd "$(dirname "$0")"
+# Change to script directory (ml/)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
-# Activate venv if it exists and not already activated
-if [ -d "venv" ] && [ -z "$VIRTUAL_ENV" ]; then
+# Check if venv exists
+if [ ! -d "venv" ]; then
+    echo "Error: Virtual environment not found in $SCRIPT_DIR"
+    echo "Please run: cd ml && ./setup.sh"
+    exit 1
+fi
+
+# Activate venv if not already activated
+if [ -z "$VIRTUAL_ENV" ]; then
     source venv/bin/activate
+fi
+
+# Verify Python is available
+if ! command -v python &> /dev/null; then
+    echo "Error: Python not found. Is the virtual environment activated?"
+    exit 1
 fi
 
 # Run uvicorn

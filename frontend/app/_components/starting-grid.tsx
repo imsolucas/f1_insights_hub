@@ -44,19 +44,16 @@ export function StartingGrid({ drivers, isLoading }: StartingGridProps) {
     );
   }
 
-  // Sort drivers by championships (descending), then by surname
-  const sortedDrivers = [...drivers].sort((a, b) => {
-    if (b.driverChampionships !== a.driverChampionships) {
-      return b.driverChampionships - a.driverChampionships;
-    }
-    return a.surname.localeCompare(b.surname);
-  });
+  // Drivers are already sorted by the backend:
+  // - By season standings position if available
+  // - Otherwise by team + surname
+  // No need to re-sort here
 
   // Split into two columns: odd positions (left), even positions (right)
   const leftColumnDrivers: Array<{ driver: Driver; position: number }> = [];
   const rightColumnDrivers: Array<{ driver: Driver; position: number }> = [];
 
-  sortedDrivers.forEach((driver, index) => {
+  drivers.forEach((driver, index) => {
     const position = index + 1;
     if (position % 2 === 1) {
       // Odd positions go to left column

@@ -1,5 +1,6 @@
 import { prisma } from '../lib/prisma';
 import { Prisma } from '@prisma/client';
+import { lineupRepo } from './lineup-repo';
 
 export const constructorsRepo = {
   async findAll(params?: { season?: number; limit?: number; offset?: number }) {
@@ -30,8 +31,31 @@ export const constructorsRepo = {
         distinct: ['constructorId'],
       });
 
-      const constructorIds = seasonConstructors.map((r) => r.constructorId);
-      const filteredConstructors = constructors.filter((c) => constructorIds.includes(c.id));
+      let filteredConstructors: typeof constructors = constructors;
+
+      // If we have race results for this season, filter by them
+      if (seasonConstructors.length > 0) {
+        const constructorIds = seasonConstructors.map((r) => r.constructorId);
+        filteredConstructors = constructors.filter((c) => constructorIds.includes(c.id));
+      }
+      
+      // If no race results found (season hasn't started or no data synced yet),
+      // try to get lineup data for this season
+      if (seasonConstructors.length === 0) {
+        const lineup = await lineupRepo.getConstructorLineup(params.season);
+        if (lineup.length > 0) {
+          const lineupConstructorIds = lineup.map(l => l.constructorId);
+          filteredConstructors = constructors.filter((c) => lineupConstructorIds.includes(c.id));
+        }
+      }
+      
+      // Sort constructors by name
+      filteredConstructors.sort((a, b) => {
+        const nameA: string = a.name;
+        const nameB: string = b.name;
+        return nameA.localeCompare(nameB);
+      });
+      
       return { constructors: filteredConstructors, total: filteredConstructors.length };
     }
 

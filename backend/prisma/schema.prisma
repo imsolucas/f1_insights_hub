@@ -27,8 +27,9 @@ model Driver {
   createdAt                DateTime  @default(now()) @map("created_at")
   updatedAt                DateTime  @updatedAt @map("updated_at")
 
-  raceResults       RaceResult[]
-  qualifyingResults QualifyingResult[]
+  raceResults         RaceResult[]
+  qualifyingResults   QualifyingResult[]
+  driverSeasonLineups DriverSeasonLineup[]
 
   @@index([driverId])
   @@map("drivers")
@@ -43,11 +44,44 @@ model Constructor {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  raceResults       RaceResult[]
-  qualifyingResults QualifyingResult[]
+  raceResults              RaceResult[]
+  qualifyingResults        QualifyingResult[]
+  constructorSeasonLineups ConstructorSeasonLineup[]
 
   @@index([constructorId])
   @@map("constructors")
+}
+
+model DriverSeasonLineup {
+  id          String   @id @default(cuid())
+  season      Int
+  driverId    String   @map("driver_id")
+  teamName    String   @map("team_name")
+  driverNumber Int?    @map("driver_number")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  driver Driver @relation(fields: [driverId], references: [id])
+
+  @@unique([season, driverId])
+  @@index([season])
+  @@index([driverId])
+  @@map("driver_season_lineups")
+}
+
+model ConstructorSeasonLineup {
+  id            String   @id @default(cuid())
+  season        Int
+  constructorId String   @map("constructor_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  constructor Constructor @relation(fields: [constructorId], references: [id])
+
+  @@unique([season, constructorId])
+  @@index([season])
+  @@index([constructorId])
+  @@map("constructor_season_lineups")
 }
 
 model Circuit {

@@ -31,16 +31,23 @@ export function getTeamLogoPath(teamName: string | null | undefined): string | n
   
   const normalized = teamName.toLowerCase().trim();
   
-  if (normalized.includes('ferrari')) return '/team-logos/ferrari.svg';
-  if (normalized.includes('mercedes')) return '/team-logos/mercedes.svg';
-  if (normalized.includes('red bull') || normalized.includes('redbull')) return '/team-logos/redbull.svg';
-  if (normalized.includes('mclaren')) return '/team-logos/mclaren.svg';
-  if (normalized.includes('aston martin') || normalized.includes('astonmartin')) return '/team-logos/astonmartin.svg';
-  if (normalized.includes('alpine')) return '/team-logos/alpine.svg';
-  if (normalized.includes('williams')) return '/team-logos/williams.svg';
-  if (normalized.includes('haas')) return '/team-logos/haas.svg';
-  if (normalized.includes('sauber') || normalized.includes('kick sauber')) return '/team-logos/sauber.svg';
-  if (normalized.includes('rb ') || normalized === 'rb' || normalized.includes('racing bulls')) return '/team-logos/rb.svg';
+  if (normalized.includes('ferrari')) return '/team-logos/2026ferrarilogowhite.webp';
+  if (normalized.includes('mercedes')) return '/team-logos/2026mercedeslogowhite.webp';
+  // Check Racing Bulls before Red Bull Racing to avoid conflicts
+  if (normalized.includes('racing bulls') || (normalized.includes('rb ') && !normalized.includes('red bull')) || normalized === 'rb') {
+    return '/team-logos/2026racingbullslogowhite.webp';
+  }
+  if (normalized.includes('red bull') || normalized.includes('redbull')) {
+    return '/team-logos/2026redbullracinglogowhite.webp';
+  }
+  if (normalized.includes('mclaren')) return '/team-logos/2026mclarenlogowhite.webp';
+  if (normalized.includes('aston martin') || normalized.includes('astonmartin')) return '/team-logos/2026astonmartinlogowhite.webp';
+  if (normalized.includes('alpine')) return '/team-logos/2026alpinelogowhite.webp';
+  if (normalized.includes('williams')) return '/team-logos/2026williamslogowhite.webp';
+  if (normalized.includes('haas')) return '/team-logos/2026haasf1teamlogowhite.webp';
+  if (normalized.includes('sauber') || normalized.includes('kick sauber') || normalized.includes('audi')) return '/team-logos/2026audilogowhite.webp';
+  if (normalized.includes('cadillac')) return '/team-logos/2026cadillaclogowhite.webp';
+  if (normalized.includes('cadillac')) return '/team-logos/2026cadillaclogowhite.webp';
   
   return null;
 }

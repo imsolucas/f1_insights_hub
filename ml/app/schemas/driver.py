@@ -6,7 +6,9 @@ from datetime import datetime
 
 class DriverSyncRequest(BaseModel):
     """Request schema for driver sync."""
-    seasons: Optional[list[int]] = None  # If None, syncs current season + recent years
+    seasons: Optional[list[int]] = None  # If None, syncs current season only
+    season: Optional[int] = None  # Single season to sync (takes precedence over seasons if provided)
+    filter_confirmed: Optional[bool] = True  # Whether to filter to confirmed drivers (only for current/future seasons)
 
 
 class DriverData(BaseModel):

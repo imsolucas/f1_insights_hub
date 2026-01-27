@@ -9,6 +9,7 @@ const navItems = [
   { href: '/drivers', label: 'Drivers' },
   { href: '/teams', label: 'Teams' },
   { href: '/circuits', label: 'Circuits' },
+  { href: '/admin', label: 'Admin' },
 ];
 
 export function Header() {

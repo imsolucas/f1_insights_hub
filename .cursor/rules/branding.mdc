@@ -11,16 +11,16 @@ All frontend work must conform to these guidelines.
 
 ## Design Philosophy
 
-- **Prediction-market meets F1**: Data-dense, odds-friendly UI (think Polymarket, Kalshi) with F1 identity.
+- **Prediction-market meets F1**: Data-dense, odds-friendly UI (think crypto trading dashboards, Polymarket, Kalshi) with F1 identity.
 - Clean, modern, data-first. Dense but scannable tables, clear probability/confidence indicators.
-- Use F1 red, white, and team colors as accents—never generic purple/blue.
-- Minimal decoration; typography and color do the work.
+- Vibrant green for primary actions and positive indicators; red for negative/destructive actions. Team colors for F1-specific context.
+- Minimal decoration; typography and color do the work. Consistent rounded corners throughout.
 
 The UI should feel:
-- **Professional** — like a serious prediction or trading surface.
-- **Calm** — dark bases, restrained accents, no visual noise.
+- **Professional** — like a serious trading or prediction surface.
+- **Calm** — dark green-gray bases, restrained accents, no visual noise.
 - **Trustworthy** — clear hierarchy, readable numbers, obvious states.
-- **F1-native** — red/white and team colors signal “this is motorsport.”
+- **F1-native** — team colors and F1 context signal "this is motorsport" while maintaining modern trading dashboard aesthetics.
 
 ---
 
@@ -38,24 +38,25 @@ No custom component libraries unless approved.
 
 ### Base (Prediction-market feel)
 
-- **Background**: Dark slate/zinc (`slate-950`, `zinc-950`) or very dark gray. Avoid pure black.
-- **Surface**: Slightly lighter than background (`slate-900`, `zinc-900`) for cards, modals, dropdowns.
+- **Background**: Dark slate/zinc (`slate-950`, `zinc-950`) or very dark gray with subtle green-gray tint. Avoid pure black.
+- **Surface**: Slightly lighter than background (`slate-900`, `zinc-900`) for cards, modals, dropdowns. All surfaces use consistent rounded corners.
 - **Foreground**: High-contrast off-white (`slate-50`, `zinc-100`) for primary text.
 - **Muted**: `slate-400` / `zinc-500` for secondary text, captions, placeholders.
 
 Light mode optional: Use `zinc-50` / `zinc-100` backgrounds with `zinc-900` foreground if you support it.
 
-### Primary Accents (F1)
+### Primary Accents (Trading Dashboard)
 
-- **Primary / F1 Red**: Bold red for CTAs, active states, key metrics, “primary” actions.
-  - Use: `red-500`–`red-600` or equivalent HSL. Ensure AA contrast on your background.
-- **White**: Use for high-emphasis text on dark red/dark surfaces, or as a secondary brand accent.
+- **Primary / Success Green**: Vibrant green for CTAs, active states, key metrics, "primary" actions, and positive indicators.
+  - Use: `emerald-400`–`emerald-500` or equivalent HSL. This is the dominant accent color for buttons, active navigation, and positive data.
+  - Ensure AA contrast on your background.
+- **White**: Use for high-emphasis text on dark green/dark surfaces, or as a secondary brand accent.
 - **Border / subtle**: `slate-700` / `zinc-800` on dark; `slate-200` on light.
 
 ### Status Colors (Prediction-market semantics)
 
-- **Success / Long / Yes / Positive**: Muted green (`emerald-500`, `green-500`). Use for gains, “yes” odds, positive deltas.
-- **Destructive / Short / No / Negative**: Muted red (`red-500`, `rose-500`). Use for losses, “no” odds, negative deltas. Keep it readable, not alarming.
+- **Success / Long / Yes / Positive**: Vibrant green (`emerald-400`, `emerald-500`). Use for gains, "yes" odds, positive deltas, active states, and primary CTAs.
+- **Destructive / Short / No / Negative**: Bold red (`red-500`, `rose-500`). Use for losses, "no" odds, negative deltas, and destructive actions (e.g., "Sell"). Keep it readable, not alarming.
 - **Warning**: Amber (`amber-500`) for alerts, pending states, caution.
 - **Neutral / Inactive**: `slate-500` for disabled or inactive states.
 
@@ -76,19 +77,19 @@ Use for driver/team context, badges, and subtle accents—not for entire layouts
 | Kick Sauber | `red-700` / `black` | Kick Sauber drivers |
 | RB         | `blue-400`  | RB drivers                  |
 
-- Prefer **outlined** or **muted** badges (e.g. `bg-red-600/10 text-red-400 border border-red-500/30`) so team colors don’t overpower the UI.
-- Use team colors in tables, driver cards, and prediction context—not for global chrome (nav, buttons) unless it’s clearly F1-red/white.
+- Prefer **outlined** or **muted** badges (e.g. `bg-red-600/10 text-red-400 border border-red-500/30`) so team colors don't overpower the UI.
+- Use team colors in tables, driver cards, and prediction context—not for global chrome (nav, buttons) which should use vibrant green for active states.
 
 ---
 
 ## Typography
 
-- **Font**: System UI or Inter. Optional: a compact numeric font for odds/statistics (e.g. tabular figures).
+- **Font**: System UI or Inter. Use a compact numeric font with tabular figures for odds/statistics.
 - **Hierarchy**:
   - Page titles: large, bold, high contrast.
   - Section headers: medium weight, clear spacing.
   - Body: readable size, comfortable line-height.
-- Use **tabular numbers** for odds, probabilities, lap times, and any aligned numeric data.
+- **Required**: Use **tabular numbers** for all odds, probabilities, lap times, prices, and any aligned numeric data in tables or data displays. This ensures consistent alignment and professional appearance.
 - Avoid decorative or playful fonts.
 
 ---
@@ -107,14 +108,15 @@ Use for driver/team context, badges, and subtle accents—not for entire layouts
 ### Allowed
 
 - Cards, Tables, Badges, Tabs, Tooltips, Skeleton loaders.
-- **Odds-style blocks**: Clear “yes/no” or probability displays with success/destructive accents.
+- **Odds-style blocks**: Clear "yes/no" or probability displays with success/destructive accents.
 - **Team/driver badges**: Use team colors as specified above.
+- All components should use **consistent rounded corners** (typically `rounded-lg` or `rounded-xl` in Tailwind).
 
 ### Required
 
 - Loading states, empty states, error states.
-- Clear **active / selected** states (e.g. F1 red underline or background tint).
-- Obvious **hover** feedback on interactive elements.
+- Clear **active / selected** states (e.g. vibrant green background or border accent, green underline for navigation).
+- Obvious **hover** feedback on interactive elements (subtle background change or border highlight).
 
 ---
 
@@ -130,8 +132,9 @@ Use for driver/team context, badges, and subtle accents—not for entire layouts
 ## Data Visualization
 
 - Charts must be readable; prefer clarity over decoration.
-- Use **success/destructive** semantics for positive vs negative (e.g. green up, red down).
-- F1 red or team colors for series that represent specific teams/drivers.
+- Use **success/destructive** semantics for positive vs negative (e.g. vibrant green for positive trends/gains, bold red for negative trends/losses).
+- Primary chart colors: vibrant green (`emerald-400`–`emerald-500`) for positive data, bold red (`red-500`) for negative data.
+- Team colors for series that represent specific teams/drivers (use as secondary colors when needed).
 - Label axes and legends clearly; support keyboard/screen readers where applicable.
 
 ---
@@ -144,20 +147,35 @@ Use for driver/team context, badges, and subtle accents—not for entire layouts
 
 ---
 
+## Clean Code
+
+- **Readable and self-documenting**: Prefer clear names and simple logic over clever shortcuts. Code should be understandable at a glance.
+- **Consistent formatting**: Use Prettier/ESLint. Follow project style for indentation, quotes, and line length.
+- **No magic values**: Use design tokens, constants, or shared config for colors, spacing, and repeated strings—no hard-coded literals scattered in JSX/CSS.
+- **DRY**: Extract repeated UI or logic into reusable components, hooks, or utilities. Avoid copy-paste.
+- **Meaningful names**: Use descriptive names for components, props, variables, and handlers (e.g. `onRaceSelect`, `isLoadingResults`).
+- **Small and focused**: Keep components and functions small and single-purpose. Split large files instead of adding more responsibilities.
+- **Explicit over implicit**: Make data flow and dependencies clear. Avoid implicit behavior or "magic" that isn’t obvious from the code.
+- **No TODOs or placeholders**: Don’t commit TODO comments or placeholder implementations. Resolve or remove them before merge.
+- **Remove cruft**: Delete unused imports, dead code, and commented-out blocks. Keep the codebase tidy.
+
+---
+
 ## Anti-Patterns (Do Not Do)
 
-- Overuse of gradients or glossy effects.
-- Excessive shadows or “dashboard clutter.”
-- Generic purple/blue as primary brand color; stick to F1 red/white and team palette.
+- Overuse of gradients or glossy effects (subtle gradients in charts are acceptable).
+- Excessive shadows or "dashboard clutter."
+- Generic purple/blue as primary brand color; stick to vibrant green/red and team palette.
 - Hard-coded inline styles; use design tokens / Tailwind.
 - Unstyled raw HTML elements.
+- Sharp corners on cards/buttons; always use rounded corners for a modern, cohesive feel.
 
 ---
 
 ## Inspiration References
 
-- **Prediction-market**: Polymarket, Kalshi, Augur — data-dense, odds-focused, professional.
-- **Product / UI**: shadcn/ui, Linear, Vercel Dashboard — clean, modern, component-driven.
-- **F1**: Official F1 graphics, team liveries — red/white, team colors, bold but readable.
+- **Prediction-market / Trading**: Crypto trading dashboards, Polymarket, Kalshi, Augur — data-dense, odds-focused, professional with vibrant green/red semantics.
+- **Product / UI**: shadcn/ui, Linear, Vercel Dashboard — clean, modern, component-driven with rounded corners.
+- **F1**: Official F1 graphics, team liveries — team colors, bold but readable.
 
-The UI should feel like a **prediction market built for F1**: serious, data-first, and unmistakably motorsport.
+The UI should feel like a **modern trading dashboard built for F1**: serious, data-first, vibrant green accents for success, red for negative, and unmistakably motorsport through team colors and context.

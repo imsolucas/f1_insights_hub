@@ -1,0 +1,235 @@
+{
+	"info": {
+		"_postman_id": "f1-insight-hub-api",
+		"name": "F1 Insight Hub - ML Service API",
+		"description": "Postman collection for testing the F1 Insight Hub ML Service (FastF1) API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Sync Drivers",
+			"item": [
+				{
+					"name": "Sync Current Season (2026) - Confirmed Only",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"season\": 2026,\n  \"filter_confirmed\": true\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/sync/drivers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"sync",
+								"drivers"
+							]
+						},
+						"description": "Sync drivers for 2026 season, filtering to only confirmed race drivers (excludes test/reserve drivers like MAG, ZHO, TSU, DOO)"
+					}
+				},
+				{
+					"name": "Sync 2025 Season",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"season\": 2025,\n  \"filter_confirmed\": false\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/sync/drivers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"sync",
+								"drivers"
+							]
+						},
+						"description": "Sync all drivers from 2025 season (includes test/reserve drivers)"
+					}
+				},
+				{
+					"name": "Sync Multiple Seasons",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"seasons\": [2024, 2025, 2026],\n  \"filter_confirmed\": true\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/sync/drivers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"sync",
+								"drivers"
+							]
+						},
+						"description": "Sync drivers from multiple seasons (2024, 2025, 2026)"
+					}
+				},
+				{
+					"name": "Sync 2026 - All Drivers (No Filter)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"season\": 2026,\n  \"filter_confirmed\": false\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/sync/drivers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"sync",
+								"drivers"
+							]
+						},
+						"description": "Sync all drivers from 2026 (including test/reserve drivers) - useful for debugging"
+					}
+				}
+			]
+		},
+		{
+			"name": "Debug Endpoints",
+			"item": [
+				{
+					"name": "Debug - Get Raw FastF1 Data (2026)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"season\": 2026,\n  \"filter_confirmed\": true\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/sync/drivers/debug",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"sync",
+								"drivers",
+								"debug"
+							]
+						},
+						"description": "Get raw FastF1 data without saving to database. Useful for inspecting what data FastF1 returns."
+					}
+				},
+				{
+					"name": "Debug - Get Raw FastF1 Data (2025)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"season\": 2025,\n  \"filter_confirmed\": false\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/sync/drivers/debug",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"sync",
+								"drivers",
+								"debug"
+							]
+						},
+						"description": "Get raw FastF1 data for 2025 season without saving to database"
+					}
+				}
+			]
+		},
+		{
+			"name": "Service Info",
+			"item": [
+				{
+					"name": "Get Service Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/api/sync/info",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"sync",
+								"info"
+							]
+						},
+						"description": "Get ML service information and status"
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}

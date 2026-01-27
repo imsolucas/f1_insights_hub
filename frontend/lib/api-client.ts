@@ -46,6 +46,26 @@ class ApiClient {
     const successData = response.data as ApiResponse<T>;
     return successData.data;
   }
+
+  async put<T>(url: string, data?: unknown): Promise<T> {
+    const response = await this.client.put<ApiResponse<T> | ApiErrorResponse>(url, data);
+    if (!response.data.success) {
+      const errorData = response.data as ApiErrorResponse;
+      throw new Error(errorData.error?.message || 'API request failed');
+    }
+    const successData = response.data as ApiResponse<T>;
+    return successData.data;
+  }
+
+  async patch<T>(url: string, data?: unknown): Promise<T> {
+    const response = await this.client.patch<ApiResponse<T> | ApiErrorResponse>(url, data);
+    if (!response.data.success) {
+      const errorData = response.data as ApiErrorResponse;
+      throw new Error(errorData.error?.message || 'API request failed');
+    }
+    const successData = response.data as ApiResponse<T>;
+    return successData.data;
+  }
 }
 
 export const apiClient = new ApiClient();
@@ -153,6 +173,12 @@ export interface SyncDriversResponse {
   message: string;
 }
 
+export interface SyncDriversRequest {
+  seasons?: number[];
+  season?: number;
+  filter_confirmed?: boolean;
+}
+
 export const driversApi = {
   getAll: (params?: { season?: number; limit?: number; offset?: number; active?: boolean }) =>
     apiClient.get<{ drivers: Driver[]; total: number; limit?: number; offset?: number }>('/drivers', params),
@@ -166,8 +192,8 @@ export const driversApi = {
   getStats: (driverId: string) =>
     apiClient.get<DriverStats>(`/drivers/${driverId}/stats`),
   
-  syncDrivers: (seasons?: number[]) =>
-    apiClient.post<SyncDriversResponse>('/sync/drivers', { seasons }),
+  syncDrivers: (request?: SyncDriversRequest) =>
+    apiClient.post<SyncDriversResponse>('/sync/drivers', request || {}),
 };
 
 // Constructors API
@@ -187,6 +213,15 @@ export interface ConstructorStats {
   podiums: number;
 }
 
+export interface SyncConstructorsResponse {
+  message: string;
+}
+
+export interface SyncConstructorsRequest {
+  seasons?: number[];
+  season?: number;
+}
+
 export const constructorsApi = {
   getAll: (params?: { season?: number; limit?: number; offset?: number }) =>
     apiClient.get<{ constructors: Constructor[]; total: number; limit?: number; offset?: number }>('/constructors', params),
@@ -199,6 +234,23 @@ export const constructorsApi = {
   
   getStats: (constructorId: string) =>
     apiClient.get<ConstructorStats>(`/constructors/${constructorId}/stats`),
+  
+  syncConstructors: (request?: SyncConstructorsRequest) =>
+    apiClient.post<SyncConstructorsResponse>('/sync/constructors', request || {}),
+};
+
+// Lineups API
+export interface SyncLineupsRequest {
+  season: number;
+}
+
+export interface SyncLineupsResponse {
+  message: string;
+}
+
+export const lineupsApi = {
+  syncLineups: (request: SyncLineupsRequest) =>
+    apiClient.post<SyncLineupsResponse>('/sync/lineups', request),
 };
 
 // Circuits API
@@ -223,4 +275,66 @@ export const circuitsApi = {
   
   getRaces: (circuitId: string) =>
     apiClient.get<{ circuit: Circuit; races: Race[] }>(`/circuits/${circuitId}/races`),
+};
+
+// Admin API
+export interface UpdateDriverRequest {
+  driverId: string;
+  code?: string | null;
+  forename?: string;
+  surname?: string;
+  dateOfBirth?: string | null;
+  nationality?: string;
+  url?: string | null;
+  permanentNumber?: number | null;
+  currentTeam?: string | null;
+  isActive?: boolean;
+  driverChampionships?: number;
+  constructorChampionships?: number;
+}
+
+export interface CreateDriverRequest {
+  driverId: string;
+  code?: string | null;
+  forename: string;
+  surname: string;
+  dateOfBirth?: string | null;
+  nationality: string;
+  url?: string | null;
+  permanentNumber?: number | null;
+  currentTeam?: string | null;
+  isActive?: boolean;
+  driverChampionships?: number;
+  constructorChampionships?: number;
+}
+
+export interface UpdateConstructorRequest {
+  constructorId: string;
+  name?: string;
+  nationality?: string;
+  url?: string | null;
+}
+
+export interface CreateConstructorRequest {
+  constructorId: string;
+  name: string;
+  nationality: string;
+  url?: string | null;
+}
+
+export const adminApi = {
+  updateDriver: (data: UpdateDriverRequest) =>
+    apiClient.put<{ driver: Driver }>('/admin/drivers', data),
+  
+  createDriver: (data: CreateDriverRequest) =>
+    apiClient.post<{ driver: Driver }>('/admin/drivers', data),
+  
+  updateDriverTeam: (driverId: string, teamName: string | null) =>
+    apiClient.patch<{ driver: Driver }>(`/admin/drivers/${driverId}/team`, { teamName }),
+  
+  updateConstructor: (data: UpdateConstructorRequest) =>
+    apiClient.put<{ constructor: Constructor }>('/admin/constructors', data),
+  
+  createConstructor: (data: CreateConstructorRequest) =>
+    apiClient.post<{ constructor: Constructor }>('/admin/constructors', data),
 };

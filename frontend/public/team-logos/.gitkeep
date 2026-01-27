@@ -1,12 +1,3 @@
 # Team logos directory
-# Add team logo SVG files here:
-# - ferrari.svg
-# - mercedes.svg
-# - redbull.svg
-# - mclaren.svg
-# - astonmartin.svg
-# - alpine.svg
-# - williams.svg
-# - haas.svg
-# - sauber.svg
-# - rb.svg
+# Team logos are stored as WebP files (2026 season white logos)
+# Format: 2026{teamname}logowhite.webp
