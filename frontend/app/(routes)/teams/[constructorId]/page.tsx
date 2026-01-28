@@ -1,7 +1,6 @@
 'use client';
 
 import { use } from 'react';
-import Image from 'next/image';
 import { useConstructor, useConstructorStats, useConstructorResults } from '../../../../lib/hooks/use-constructors';
 import { ResultsTable } from '../../../_components/results-table';
 import { LoadingSkeleton } from '../../../_components/loading-skeleton';

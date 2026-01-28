@@ -16,16 +16,18 @@ export default function DriversPage() {
   const [selectedSeason, setSelectedSeason] = useState<number>(currentYear);
   const [isHydrated, setIsHydrated] = useState(false);
   
-  // Load season from localStorage after hydration
+  // Load season from localStorage after hydration (defer setState to avoid cascading renders)
   useEffect(() => {
-    setIsHydrated(true);
-    const stored = localStorage.getItem(SEASON_STORAGE_KEY);
-    if (stored) {
-      const parsed = parseInt(stored, 10);
-      if (!isNaN(parsed) && parsed >= currentYear - 10 && parsed <= currentYear) {
-        setSelectedSeason(parsed);
+    queueMicrotask(() => {
+      const stored = localStorage.getItem(SEASON_STORAGE_KEY);
+      if (stored) {
+        const parsed = parseInt(stored, 10);
+        if (!isNaN(parsed) && parsed >= currentYear - 10 && parsed <= currentYear) {
+          setSelectedSeason(parsed);
+        }
       }
-    }
+      setIsHydrated(true);
+    });
   }, [currentYear]);
   
   const { data, isLoading, error, refetch } = useDriversLineup({ 
