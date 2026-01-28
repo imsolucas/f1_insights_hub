@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useDrivers } from '../../../lib/hooks/use-drivers';
+import { useDriversLineup } from '../../../lib/hooks/use-drivers-lineup';
 import { StartingGrid } from '../../_components/starting-grid';
 import { ErrorState } from '../../_components/error-state';
 
-const SEASON_STORAGE_KEY = 'f1-insight-hub-selected-season';
+const SEASON_STORAGE_KEY = 'f1-insight-hub-drivers-selected-season';
 
 export default function DriversPage() {
   const currentYear = new Date().getFullYear();
@@ -24,11 +24,16 @@ export default function DriversPage() {
     return currentYear;
   });
   
-  const [showActiveOnly, setShowActiveOnly] = useState(true);
-  const { data, isLoading, error, refetch } = useDrivers({ 
-    season: selectedSeason,
-    active: showActiveOnly ? true : undefined 
+  const { data, isLoading, error, refetch } = useDriversLineup({ 
+    season: selectedSeason
   });
+
+  // Save season to localStorage when it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SEASON_STORAGE_KEY, selectedSeason.toString());
+    }
+  }, [selectedSeason]);
 
   // Generate season options (current year and 10 years back)
   const seasonOptions = Array.from({ length: 11 }, (_, i) => currentYear - i);
@@ -38,16 +43,6 @@ export default function DriversPage() {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-bold text-foreground uppercase tracking-wide">F1 Drivers</h1>
         <div className="flex items-center gap-4 flex-wrap">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showActiveOnly}
-              onChange={(e) => setShowActiveOnly(e.target.checked)}
-              className="w-4 h-4 rounded border-border accent-primary"
-            />
-            <span className="text-sm text-muted-foreground">Active only</span>
-          </label>
-          
           {/* Season Selector */}
           <div className="flex items-center gap-2">
             <label htmlFor="season-select" className="text-sm text-muted-foreground">
@@ -59,12 +54,7 @@ export default function DriversPage() {
               onChange={(e) => {
                 const newSeason = Number(e.target.value);
                 setSelectedSeason(newSeason);
-                // Save to localStorage
-                if (typeof window !== 'undefined') {
-                  localStorage.setItem(SEASON_STORAGE_KEY, newSeason.toString());
-                }
-                // Automatically refetch when season changes
-                refetch();
+                // React Query will automatically refetch when queryKey changes (season in params)
               }}
               className="px-3 py-1.5 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             >

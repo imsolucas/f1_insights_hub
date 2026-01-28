@@ -438,12 +438,15 @@ async def sync_teams_endpoint(request: TeamSyncRequest):
 async def sync_lineups_endpoint(request: LineupSyncRequest):
     """
     Sync driver and constructor lineups for a season.
-    Fetches lineup data from FastF1 API (team assignments, driver numbers).
+    Fetches lineup data from FastF1 API and stores as JSON (one row per season).
     """
     try:
         logger.info(f"Starting lineup sync for season {request.season}")
         
         import asyncio
+        import json
+        from collections import defaultdict
+        
         loop = asyncio.get_event_loop()
         
         driver_lineups = []
@@ -476,81 +479,68 @@ async def sync_lineups_endpoint(request: LineupSyncRequest):
                 errors=errors if errors else None,
             )
         
+        # Process driver lineups - group by team
+        teams_dict = defaultdict(list)
+        for lineup in driver_lineups:
+            team_name = lineup.get("team_name", "Unknown")
+            teams_dict[team_name].append({
+                "driverId": lineup["driver_id"],
+                "driverNumber": lineup.get("driver_number"),
+            })
+        
+        # Create JSON structure for drivers
+        driver_lineup_json = {
+            "teams": [
+                {
+                    "teamName": team_name,
+                    "drivers": drivers
+                }
+                for team_name, drivers in sorted(teams_dict.items())
+            ]
+        }
+        
+        # Process constructor lineups - extract constructor IDs
+        constructor_ids = [lineup["constructor_id"] for lineup in constructor_lineups]
+        
         # Upsert to database
         db = SessionLocal()
         driver_synced = 0
         constructor_synced = 0
         
         try:
-            # Upsert driver lineups
-            for lineup in driver_lineups:
-                try:
-                    # Check if driver exists in database first
-                    driver_check = db.execute(
-                        text("SELECT id FROM drivers WHERE driver_id = :driver_id"),
-                        {"driver_id": lineup["driver_id"]}
-                    ).fetchone()
-                    
-                    if not driver_check:
-                        logger.warning(f"Driver {lineup['driver_id']} not found in database, skipping lineup")
-                        errors.append(f"Driver {lineup['driver_id']} not found")
-                        continue
-                    
-                    driver_db_id = driver_check[0]
-                    
-                    db.execute(text("""
-                        INSERT INTO driver_season_lineups (id, season, driver_id, team_name, driver_number, created_at, updated_at)
-                        VALUES (:id, :season, :driver_id, :team_name, :driver_number, NOW(), NOW())
-                        ON CONFLICT (season, driver_id)
-                        DO UPDATE SET
-                            team_name = EXCLUDED.team_name,
-                            driver_number = EXCLUDED.driver_number,
-                            updated_at = NOW()
-                    """), {
-                        "id": str(uuid.uuid4()),
-                        "season": lineup["season"],
-                        "driver_id": driver_db_id,
-                        "team_name": lineup.get("team_name", ""),
-                        "driver_number": lineup.get("driver_number"),
-                    })
-                    driver_synced += 1
-                except Exception as e:
-                    error_msg = f"Error syncing driver lineup (driver: {lineup.get('driver_id')}): {str(e)}"
-                    logger.error(error_msg)
-                    errors.append(error_msg)
+            # Upsert driver lineup (single row per season)
+            if driver_lineup_json["teams"]:
+                db.execute(text("""
+                    INSERT INTO driver_season_lineups (id, season, lineup, created_at, updated_at)
+                    VALUES (:id, :season, CAST(:lineup AS jsonb), NOW(), NOW())
+                    ON CONFLICT (season)
+                    DO UPDATE SET
+                        lineup = EXCLUDED.lineup,
+                        updated_at = NOW()
+                """), {
+                    "id": str(uuid.uuid4()),
+                    "season": request.season,
+                    "lineup": json.dumps(driver_lineup_json),
+                })
+                driver_synced = len(driver_lineups)
+                logger.info(f"Stored driver lineup for season {request.season} with {len(driver_lineup_json['teams'])} teams")
             
-            # Upsert constructor lineups
-            for lineup in constructor_lineups:
-                try:
-                    # Check if constructor exists in database first
-                    constructor_check = db.execute(
-                        text("SELECT id FROM constructors WHERE constructor_id = :constructor_id"),
-                        {"constructor_id": lineup["constructor_id"]}
-                    ).fetchone()
-                    
-                    if not constructor_check:
-                        logger.warning(f"Constructor {lineup['constructor_id']} not found in database, skipping lineup")
-                        errors.append(f"Constructor {lineup['constructor_id']} not found")
-                        continue
-                    
-                    constructor_db_id = constructor_check[0]
-                    
-                    db.execute(text("""
-                        INSERT INTO constructor_season_lineups (id, season, constructor_id, created_at, updated_at)
-                        VALUES (:id, :season, :constructor_id, NOW(), NOW())
-                        ON CONFLICT (season, constructor_id)
-                        DO UPDATE SET
-                            updated_at = NOW()
-                    """), {
-                        "id": str(uuid.uuid4()),
-                        "season": lineup["season"],
-                        "constructor_id": constructor_db_id,
-                    })
-                    constructor_synced += 1
-                except Exception as e:
-                    error_msg = f"Error syncing constructor lineup (constructor: {lineup.get('constructor_id')}): {str(e)}"
-                    logger.error(error_msg)
-                    errors.append(error_msg)
+            # Upsert constructor lineup (single row per season)
+            if constructor_ids:
+                db.execute(text("""
+                    INSERT INTO constructor_season_lineups (id, season, constructors, created_at, updated_at)
+                    VALUES (:id, :season, CAST(:constructors AS jsonb), NOW(), NOW())
+                    ON CONFLICT (season)
+                    DO UPDATE SET
+                        constructors = EXCLUDED.constructors,
+                        updated_at = NOW()
+                """), {
+                    "id": str(uuid.uuid4()),
+                    "season": request.season,
+                    "constructors": json.dumps(constructor_ids),
+                })
+                constructor_synced = len(constructor_ids)
+                logger.info(f"Stored constructor lineup for season {request.season} with {len(constructor_ids)} constructors")
             
             db.commit()
         except Exception as e:
@@ -560,11 +550,11 @@ async def sync_lineups_endpoint(request: LineupSyncRequest):
         finally:
             db.close()
         
-        logger.info(f"Successfully synced {driver_synced} driver lineups and {constructor_synced} constructor lineups")
+        logger.info(f"Successfully synced lineup for season {request.season}: {driver_synced} drivers across {len(driver_lineup_json['teams'])} teams, {constructor_synced} constructors")
         
         return LineupSyncResponse(
             success=True,
-            message=f"Synced {driver_synced} driver lineups and {constructor_synced} constructor lineups for season {request.season}",
+            message=f"Synced {driver_synced} drivers and {constructor_synced} constructors for season {request.season}",
             drivers_synced=driver_synced,
             constructors_synced=constructor_synced,
             errors=errors if errors else None,

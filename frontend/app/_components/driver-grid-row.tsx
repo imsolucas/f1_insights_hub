@@ -19,9 +19,11 @@ function getOrdinalSuffix(num: number): string {
 }
 
 export function DriverGridRow({ driver, position }: DriverGridRowProps) {
-  const teamColorClass = getTeamColorClass(driver.currentTeam);
-  const teamLogoPath = getTeamLogoPath(driver.currentTeam);
-  const teamInitials = getTeamInitials(driver.currentTeam);
+  // Use teamName from lineup if available, otherwise fall back to currentTeam
+  const teamName = (driver as any).teamName || driver.currentTeam;
+  const teamColorClass = getTeamColorClass(teamName);
+  const teamLogoPath = getTeamLogoPath(teamName);
+  const teamInitials = getTeamInitials(teamName);
   const ordinalPosition = getOrdinalSuffix(position);
 
   return (
@@ -60,7 +62,7 @@ export function DriverGridRow({ driver, position }: DriverGridRowProps) {
           <div className="relative w-10 h-10">
             <Image
               src={teamLogoPath}
-              alt={`${driver.currentTeam} logo`}
+              alt={`${teamName} logo`}
               width={40}
               height={40}
               className="opacity-90 group-hover:opacity-100 transition-opacity object-contain"

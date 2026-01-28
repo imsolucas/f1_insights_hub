@@ -11,7 +11,9 @@ import { useSyncLineups } from '../../../lib/hooks/use-sync-lineups';
 import { CreateDriverRequest, CreateConstructorRequest } from '../../../lib/api-client';
 import { ErrorState } from '../../_components/error-state';
 
-const SEASON_STORAGE_KEY = 'f1-insight-hub-admin-sync-season';
+const SEASON_STORAGE_KEY_DRIVERS = 'f1-insight-hub-admin-sync-season-drivers';
+const SEASON_STORAGE_KEY_CONSTRUCTORS = 'f1-insight-hub-admin-sync-season-constructors';
+const SEASON_STORAGE_KEY_LINEUPS = 'f1-insight-hub-admin-sync-season-lineups';
 
 export default function AdminPage() {
   const currentYear = new Date().getFullYear();
@@ -26,10 +28,10 @@ export default function AdminPage() {
   const { data: constructorsData, isLoading: constructorsLoading } = useConstructors();
   const queryClient = useQueryClient();
   
-  // Sync functionality - Load syncSeason from localStorage
-  const [syncSeason, setSyncSeason] = useState<number>(() => {
+  // Sync functionality - Separate state for each section with localStorage persistence
+  const getInitialSeason = (storageKey: string) => {
     if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem(SEASON_STORAGE_KEY);
+      const stored = localStorage.getItem(storageKey);
       if (stored) {
         const parsed = parseInt(stored, 10);
         if (!isNaN(parsed) && parsed >= currentYear - 10 && parsed <= currentYear + 1) {
@@ -38,18 +40,34 @@ export default function AdminPage() {
       }
     }
     return currentYear;
-  });
+  };
+
+  const [syncDriversSeason, setSyncDriversSeason] = useState<number>(() => getInitialSeason(SEASON_STORAGE_KEY_DRIVERS));
+  const [syncConstructorsSeason, setSyncConstructorsSeason] = useState<number>(() => getInitialSeason(SEASON_STORAGE_KEY_CONSTRUCTORS));
+  const [syncLineupsSeason, setSyncLineupsSeason] = useState<number>(() => getInitialSeason(SEASON_STORAGE_KEY_LINEUPS));
   const [filterConfirmed, setFilterConfirmed] = useState(true);
   const syncDrivers = useSyncDrivers();
   const syncConstructors = useSyncConstructors();
   const syncLineups = useSyncLineups();
 
-  // Save syncSeason to localStorage when it changes
+  // Save seasons to localStorage when they change
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(SEASON_STORAGE_KEY, syncSeason.toString());
+      localStorage.setItem(SEASON_STORAGE_KEY_DRIVERS, syncDriversSeason.toString());
     }
-  }, [syncSeason]);
+  }, [syncDriversSeason]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SEASON_STORAGE_KEY_CONSTRUCTORS, syncConstructorsSeason.toString());
+    }
+  }, [syncConstructorsSeason]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SEASON_STORAGE_KEY_LINEUPS, syncLineupsSeason.toString());
+    }
+  }, [syncLineupsSeason]);
 
   const drivers = driversData?.drivers || [];
   const constructors = constructorsData?.constructors || [];
@@ -850,8 +868,8 @@ export default function AdminPage() {
                 </label>
                 <select
                   id="sync-season-drivers"
-                  value={syncSeason}
-                  onChange={(e) => setSyncSeason(Number(e.target.value))}
+                  value={syncDriversSeason}
+                  onChange={(e) => setSyncDriversSeason(Number(e.target.value))}
                   className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   disabled={syncDrivers.isPending}
                 >
@@ -863,7 +881,7 @@ export default function AdminPage() {
                 </select>
               </div>
 
-              {syncSeason >= currentYear && (
+              {syncDriversSeason >= currentYear && (
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -883,8 +901,8 @@ export default function AdminPage() {
                 onClick={async () => {
                   try {
                     await syncDrivers.mutateAsync({
-                      season: syncSeason,
-                      filter_confirmed: syncSeason >= currentYear ? filterConfirmed : undefined,
+                      season: syncDriversSeason,
+                      filter_confirmed: syncDriversSeason >= currentYear ? filterConfirmed : undefined,
                     });
                     setSuccess('Drivers synced successfully!');
                     setError(null);
@@ -913,8 +931,8 @@ export default function AdminPage() {
                 </label>
                 <select
                   id="sync-season-teams"
-                  value={syncSeason}
-                  onChange={(e) => setSyncSeason(Number(e.target.value))}
+                  value={syncConstructorsSeason}
+                  onChange={(e) => setSyncConstructorsSeason(Number(e.target.value))}
                   className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   disabled={syncConstructors.isPending}
                 >
@@ -930,7 +948,7 @@ export default function AdminPage() {
                 onClick={async () => {
                   try {
                     await syncConstructors.mutateAsync({
-                      season: syncSeason,
+                      season: syncConstructorsSeason,
                     });
                     setSuccess('Teams synced successfully!');
                     setError(null);
@@ -962,8 +980,8 @@ export default function AdminPage() {
                 </label>
                 <select
                   id="sync-season-lineups"
-                  value={syncSeason}
-                  onChange={(e) => setSyncSeason(Number(e.target.value))}
+                  value={syncLineupsSeason}
+                  onChange={(e) => setSyncLineupsSeason(Number(e.target.value))}
                   className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                   disabled={syncLineups.isPending}
                 >
@@ -979,7 +997,7 @@ export default function AdminPage() {
                 onClick={async () => {
                   try {
                     await syncLineups.mutateAsync({
-                      season: syncSeason,
+                      season: syncLineupsSeason,
                     });
                     setSuccess('Lineups synced successfully!');
                     setError(null);

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { driversRepo } from '../repositories/drivers-repo';
+import { lineupRepo } from '../repositories/lineup-repo';
 import { sendSuccess, getCorrelationId } from '../utils/response';
 import { ApiError } from '../utils/errors';
 import { getDriversQuerySchema, getDriverParamsSchema } from '../schemas/drivers';
@@ -67,6 +68,30 @@ export const getDriverStats = async (req: Request, res: Response, next: NextFunc
     }
 
     sendSuccess(res, stats, correlationId);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getDriversLineup = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const correlationId = getCorrelationId(req);
+    const query = getDriversQuerySchema.parse(req.query);
+    
+    if (!query.season) {
+      throw new ApiError(400, 'BAD_REQUEST', 'Season parameter is required for lineup endpoint');
+    }
+
+    const lineups = await lineupRepo.getDriverLineup(query.season);
+    
+    // Transform lineup data to match driver format with lineup info
+    const drivers = lineups.map((lineup) => ({
+      ...lineup.driver,
+      teamName: lineup.teamName,
+      driverNumber: lineup.driverNumber,
+    }));
+
+    sendSuccess(res, { drivers, total: drivers.length, season: query.season }, correlationId);
   } catch (error) {
     next(error);
   }

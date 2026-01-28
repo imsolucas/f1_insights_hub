@@ -159,6 +159,8 @@ export interface Driver {
   constructorChampionships: number;
   currentTeam: string | null;
   isActive: boolean;
+  teamName?: string; // From lineup
+  driverNumber?: number | null; // From lineup
 }
 
 export interface DriverStats {
@@ -182,6 +184,9 @@ export interface SyncDriversRequest {
 export const driversApi = {
   getAll: (params?: { season?: number; limit?: number; offset?: number; active?: boolean }) =>
     apiClient.get<{ drivers: Driver[]; total: number; limit?: number; offset?: number }>('/drivers', params),
+  
+  getLineup: (params: { season: number }) =>
+    apiClient.get<{ drivers: Driver[]; total: number; season: number }>('/drivers/lineup', params),
   
   getById: (driverId: string) =>
     apiClient.get<{ driver: Driver }>(`/drivers/${driverId}`),
@@ -225,6 +230,9 @@ export interface SyncConstructorsRequest {
 export const constructorsApi = {
   getAll: (params?: { season?: number; limit?: number; offset?: number }) =>
     apiClient.get<{ constructors: Constructor[]; total: number; limit?: number; offset?: number }>('/constructors', params),
+  
+  getLineup: (params: { season: number }) =>
+    apiClient.get<{ constructors: Constructor[]; total: number; season: number }>('/constructors/lineup', params),
   
   getById: (constructorId: string) =>
     apiClient.get<{ constructor: Constructor }>(`/constructors/${constructorId}`),

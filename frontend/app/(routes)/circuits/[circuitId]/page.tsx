@@ -1,13 +1,15 @@
 'use client';
 
+import { use } from 'react';
 import { useCircuit, useCircuitRaces } from '../../../../lib/hooks/use-circuits';
 import { RaceCard } from '../../../_components/race-card';
 import { LoadingSkeleton } from '../../../_components/loading-skeleton';
 import { ErrorState } from '../../../_components/error-state';
 
-export default function CircuitDetailPage({ params }: { params: { circuitId: string } }) {
-  const { data: circuitData, isLoading: circuitLoading, error: circuitError, refetch: circuitRefetch } = useCircuit(params.circuitId);
-  const { data: racesData, isLoading: racesLoading, error: racesError, refetch: racesRefetch } = useCircuitRaces(params.circuitId);
+export default function CircuitDetailPage({ params }: { params: Promise<{ circuitId: string }> }) {
+  const { circuitId } = use(params);
+  const { data: circuitData, isLoading: circuitLoading, error: circuitError, refetch: circuitRefetch } = useCircuit(circuitId);
+  const { data: racesData, isLoading: racesLoading, error: racesError, refetch: racesRefetch } = useCircuitRaces(circuitId);
 
   if (circuitLoading) {
     return (

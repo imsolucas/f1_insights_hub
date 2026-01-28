@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { constructorsRepo } from '../repositories/constructors-repo';
+import { lineupRepo } from '../repositories/lineup-repo';
 import { sendSuccess, getCorrelationId } from '../utils/response';
 import { ApiError } from '../utils/errors';
 import { getConstructorsQuerySchema, getConstructorParamsSchema } from '../schemas/constructors';
@@ -66,6 +67,26 @@ export const getConstructorStats = async (req: Request, res: Response, next: Nex
     }
 
     sendSuccess(res, stats, correlationId);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getConstructorsLineup = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const correlationId = getCorrelationId(req);
+    const query = getConstructorsQuerySchema.parse(req.query);
+    
+    if (!query.season) {
+      throw new ApiError(400, 'BAD_REQUEST', 'Season parameter is required for lineup endpoint');
+    }
+
+    const lineups = await lineupRepo.getConstructorLineup(query.season);
+    
+    // Transform lineup data to match constructor format
+    const constructors = lineups.map((lineup) => lineup.constructor);
+
+    sendSuccess(res, { constructors, total: constructors.length, season: query.season }, correlationId);
   } catch (error) {
     next(error);
   }

@@ -44,7 +44,7 @@ export const constructorsRepo = {
       if (seasonConstructors.length === 0) {
         const lineup = await lineupRepo.getConstructorLineup(params.season);
         if (lineup.length > 0) {
-          const lineupConstructorIds = lineup.map(l => l.constructorId);
+          const lineupConstructorIds = lineup.map(l => l.constructor.id);
           filteredConstructors = constructors.filter((c) => lineupConstructorIds.includes(c.id));
         }
       }

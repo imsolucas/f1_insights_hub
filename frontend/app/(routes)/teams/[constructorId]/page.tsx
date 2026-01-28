@@ -1,14 +1,16 @@
 'use client';
 
+import { use } from 'react';
 import { useConstructor, useConstructorStats, useConstructorResults } from '../../../../lib/hooks/use-constructors';
 import { ResultsTable } from '../../../_components/results-table';
 import { LoadingSkeleton } from '../../../_components/loading-skeleton';
 import { ErrorState } from '../../../_components/error-state';
 
-export default function TeamDetailPage({ params }: { params: { constructorId: string } }) {
-  const { data: constructorData, isLoading: constructorLoading, error: constructorError, refetch: constructorRefetch } = useConstructor(params.constructorId);
-  const { data: statsData, isLoading: statsLoading } = useConstructorStats(params.constructorId);
-  const { data: resultsData, isLoading: resultsLoading, error: resultsError, refetch: resultsRefetch } = useConstructorResults(params.constructorId);
+export default function TeamDetailPage({ params }: { params: Promise<{ constructorId: string }> }) {
+  const { constructorId } = use(params);
+  const { data: constructorData, isLoading: constructorLoading, error: constructorError, refetch: constructorRefetch } = useConstructor(constructorId);
+  const { data: statsData, isLoading: statsLoading } = useConstructorStats(constructorId);
+  const { data: resultsData, isLoading: resultsLoading, error: resultsError, refetch: resultsRefetch } = useConstructorResults(constructorId);
 
   if (constructorLoading) {
     return (

@@ -4,9 +4,12 @@ import {
   getConstructor,
   getConstructorResults,
   getConstructorStats,
+  getConstructorsLineup,
 } from '../../controllers/constructors-controller';
 
 export const constructorsRouter = Router();
+
+constructorsRouter.get('/lineup', getConstructorsLineup);
 
 /**
  * @swagger

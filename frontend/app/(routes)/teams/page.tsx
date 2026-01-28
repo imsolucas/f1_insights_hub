@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useConstructors } from '../../../lib/hooks/use-constructors';
+import { useState, useEffect } from 'react';
+import { useConstructorsLineup } from '../../../lib/hooks/use-constructors-lineup';
 import { Constructor } from '../../../lib/api-client';
 import { ErrorState } from '../../_components/error-state';
 import { LoadingSkeleton } from '../../_components/loading-skeleton';
 import Link from 'next/link';
 
-const SEASON_STORAGE_KEY = 'f1-insight-hub-selected-season';
+const SEASON_STORAGE_KEY = 'f1-insight-hub-teams-selected-season';
 
 interface TeamCardProps {
   constructor: Constructor;
@@ -80,9 +80,16 @@ export default function TeamsPage() {
     }
     return currentYear;
   });
-  const { data, isLoading, error, refetch } = useConstructors({
+  const { data, isLoading, error, refetch } = useConstructorsLineup({
     season: selectedSeason,
   });
+
+  // Save season to localStorage when it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(SEASON_STORAGE_KEY, selectedSeason.toString());
+    }
+  }, [selectedSeason]);
 
   // Generate season options (current year and 10 years back)
   const seasonOptions = Array.from({ length: 11 }, (_, i) => currentYear - i);
@@ -105,10 +112,6 @@ export default function TeamsPage() {
               onChange={(e) => {
                 const newSeason = Number(e.target.value);
                 setSelectedSeason(newSeason);
-                // Save to localStorage
-                if (typeof window !== 'undefined') {
-                  localStorage.setItem(SEASON_STORAGE_KEY, newSeason.toString());
-                }
                 // Automatically refetch when season changes
                 refetch();
               }}
