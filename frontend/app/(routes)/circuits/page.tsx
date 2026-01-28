@@ -2,7 +2,7 @@
 
 import { useCircuits } from '../../../lib/hooks/use-circuits';
 import { CircuitCard } from '../../_components/circuit-card';
-import { LoadingSkeleton, CardSkeleton } from '../../_components/loading-skeleton';
+import { CardSkeleton } from '../../_components/loading-skeleton';
 import { ErrorState } from '../../_components/error-state';
 
 export default function CircuitsPage() {

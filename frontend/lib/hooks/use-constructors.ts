@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { constructorsApi, Constructor, ConstructorStats, RaceResult } from '../api-client';
+import { constructorsApi } from '../api-client';
 
 export function useConstructors(params?: { season?: number; limit?: number; offset?: number }) {
   return useQuery({

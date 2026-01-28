@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { circuitsApi, Circuit, Race } from '../api-client';
+import { circuitsApi } from '../api-client';
 
 export function useCircuits() {
   return useQuery({

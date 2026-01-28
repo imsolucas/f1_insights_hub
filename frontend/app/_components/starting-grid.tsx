@@ -2,7 +2,6 @@
 
 import { Driver } from '../../lib/api-client';
 import { DriverGridRow } from './driver-grid-row';
-import { LoadingSkeleton } from './loading-skeleton';
 
 interface StartingGridProps {
   drivers: Driver[];
@@ -12,13 +11,13 @@ interface StartingGridProps {
 function GridRowSkeleton() {
   return (
     <div className="bg-slate-800 rounded-lg px-6 py-4 flex items-center justify-between animate-pulse">
-      <div className="flex-shrink-0 w-16">
+      <div className="shrink-0 w-16">
         <div className="bg-slate-700 rounded px-3 py-1.5 w-12 h-6"></div>
       </div>
       <div className="flex-1 px-4">
         <div className="bg-slate-700 rounded h-6 w-32"></div>
       </div>
-      <div className="flex-shrink-0 w-16">
+      <div className="shrink-0 w-16">
         <div className="bg-slate-700 rounded w-10 h-10"></div>
       </div>
     </div>

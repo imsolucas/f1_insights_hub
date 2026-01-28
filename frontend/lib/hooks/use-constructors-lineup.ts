@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { constructorsApi, Constructor } from '../api-client';
+import { constructorsApi } from '../api-client';
 
 export function useConstructorsLineup(params: { season: number }) {
   return useQuery({

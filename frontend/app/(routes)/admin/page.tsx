@@ -9,7 +9,6 @@ import { useSyncDrivers } from '../../../lib/hooks/use-sync-drivers';
 import { useSyncConstructors } from '../../../lib/hooks/use-sync-constructors';
 import { useSyncLineups } from '../../../lib/hooks/use-sync-lineups';
 import { CreateDriverRequest, CreateConstructorRequest } from '../../../lib/api-client';
-import { ErrorState } from '../../_components/error-state';
 
 const SEASON_STORAGE_KEY_DRIVERS = 'f1-insight-hub-admin-sync-season-drivers';
 const SEASON_STORAGE_KEY_CONSTRUCTORS = 'f1-insight-hub-admin-sync-season-constructors';

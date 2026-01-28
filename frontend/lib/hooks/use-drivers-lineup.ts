@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { driversApi, Driver } from '../api-client';
+import { driversApi } from '../api-client';
 
 export function useDriversLineup(params: { season: number }) {
   return useQuery({

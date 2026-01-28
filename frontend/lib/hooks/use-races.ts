@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { racesApi, Race, RaceResult, QualifyingResult } from '../api-client';
+import { racesApi } from '../api-client';
 
 export function useRaces(params?: { season?: number; limit?: number; offset?: number }) {
   return useQuery({

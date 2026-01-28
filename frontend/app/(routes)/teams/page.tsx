@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useConstructorsLineup } from '../../../lib/hooks/use-constructors-lineup';
 import { Constructor } from '../../../lib/api-client';
 import { ErrorState } from '../../_components/error-state';
-import { LoadingSkeleton } from '../../_components/loading-skeleton';
 import Link from 'next/link';
 
 const SEASON_STORAGE_KEY = 'f1-insight-hub-teams-selected-season';

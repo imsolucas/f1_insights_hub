@@ -20,7 +20,7 @@ function getOrdinalSuffix(num: number): string {
 
 export function DriverGridRow({ driver, position }: DriverGridRowProps) {
   // Use teamName from lineup if available, otherwise fall back to currentTeam
-  const teamName = (driver as any).teamName || driver.currentTeam;
+  const teamName = driver.teamName || driver.currentTeam;
   const teamColorClass = getTeamColorClass(teamName);
   const teamLogoPath = getTeamLogoPath(teamName);
   const teamInitials = getTeamInitials(teamName);
@@ -31,7 +31,7 @@ export function DriverGridRow({ driver, position }: DriverGridRowProps) {
       className={`${teamColorClass} rounded-lg px-6 py-4 flex items-center justify-between hover:brightness-110 transition-all cursor-pointer group shadow-lg`}
     >
       {/* Position */}
-      <div className="flex-shrink-0 w-16">
+      <div className="shrink-0 w-16">
         <div className="bg-white/10 backdrop-blur-sm rounded px-3 py-1.5 inline-block">
           <span className="text-white font-bold text-sm tabular-nums">
             {ordinalPosition}
@@ -57,7 +57,7 @@ export function DriverGridRow({ driver, position }: DriverGridRowProps) {
       </div>
 
       {/* Team Logo */}
-      <div className="flex-shrink-0 w-16 flex items-center justify-end">
+      <div className="shrink-0 w-16 flex items-center justify-end">
         {teamLogoPath ? (
           <div className="relative w-10 h-10">
             <Image

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { driversApi, Driver, DriverStats, RaceResult } from '../api-client';
+import { driversApi } from '../api-client';
 
 export function useDrivers(params?: { season?: number; limit?: number; offset?: number; active?: boolean }) {
   return useQuery({

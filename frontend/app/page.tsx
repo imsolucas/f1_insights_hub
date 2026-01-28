@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useCurrentSeasonSchedule } from '../lib/hooks/use-races';
 import { RaceCard } from './_components/race-card';
-import { LoadingSkeleton, CardSkeleton } from './_components/loading-skeleton';
+import { CardSkeleton } from './_components/loading-skeleton';
 import { ErrorState } from './_components/error-state';
 
 export default function Home() {
