@@ -84,13 +84,24 @@ Use for driver/team context, badges, and subtle accents—not for entire layouts
 
 ## Typography
 
-- **Font**: System UI or Inter. Use a compact numeric font with tabular figures for odds/statistics.
-- **Hierarchy**:
-  - Page titles: large, bold, high contrast.
-  - Section headers: medium weight, clear spacing.
-  - Body: readable size, comfortable line-height.
+- **Primary Font**: **Poppins** (via `--font-poppins` CSS variable) for all headings, titles, and prominent text.
+  - Use `style={{ fontFamily: 'var(--font-poppins)' }}` in React components.
+  - Poppins is loaded with weights: 400, 600, 700, 800 (normal and italic styles).
+- **Font Hierarchy**:
+  - **Page titles (h1)**: `text-4xl font-extrabold uppercase tracking-wide italic` with Poppins font
+    - Typically paired with F1 logo image (`h-24 w-auto`)
+    - Example: "DRIVERS 2025", "TEAMS", "CIRCUITS"
+  - **Section headers (h2)**: `text-2xl font-bold uppercase tracking-wide italic` with Poppins font
+    - Example: "UPCOMING RACES", "RECENT RESULTS"
+  - **Subsection headers (h3)**: `text-xl font-bold uppercase tracking-wide italic` with Poppins font
+    - Example: "DRIVERS", "TEAMS", "CIRCUITS" in navigation cards
+  - **Body text**: System UI or Inter for readability. Use Poppins only for headings and titles.
+- **Typography Pattern**:
+  - All main page titles use: Poppins + `font-extrabold` + `italic` + `uppercase` + `tracking-wide`
+  - Section headers use: Poppins + `font-bold` + `italic` + `uppercase` + `tracking-wide`
+  - Driver names in cards use: Poppins + `font-extrabold` + `italic` + `uppercase`
 - **Required**: Use **tabular numbers** for all odds, probabilities, lap times, prices, and any aligned numeric data in tables or data displays. This ensures consistent alignment and professional appearance.
-- Avoid decorative or playful fonts.
+- **F1 Logo Integration**: Main page titles should include the F1 logo image (`/f1-logo/f1-logo.svg`) positioned before the text, sized appropriately (`h-24 w-auto` for main titles, `h-16 w-auto` for detail pages, `h-8 w-auto` for header).
 
 ---
 

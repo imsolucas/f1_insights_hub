@@ -192,53 +192,53 @@ export default function AdminPage() {
         </div>
       )}
 
-      <div className="flex gap-4 mb-6 border-b border-border flex-wrap">
+      <div className="flex gap-2 mb-8 p-1 bg-muted/30 rounded-xl flex-wrap w-fit">
         <button
           onClick={() => setActiveTab('driver')}
-          className={`px-4 py-2 font-medium transition-colors ${
+          className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
             activeTab === 'driver'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
           }`}
         >
           Update Driver
         </button>
         <button
           onClick={() => setActiveTab('add-driver')}
-          className={`px-4 py-2 font-medium transition-colors ${
+          className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
             activeTab === 'add-driver'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
           }`}
         >
           Add Driver
         </button>
         <button
           onClick={() => setActiveTab('constructor')}
-          className={`px-4 py-2 font-medium transition-colors ${
+          className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
             activeTab === 'constructor'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
           }`}
         >
           Update Constructor
         </button>
         <button
           onClick={() => setActiveTab('add-constructor')}
-          className={`px-4 py-2 font-medium transition-colors ${
+          className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
             activeTab === 'add-constructor'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
           }`}
         >
           Add Constructor
         </button>
         <button
           onClick={() => setActiveTab('sync')}
-          className={`px-4 py-2 font-medium transition-colors ${
+          className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
             activeTab === 'sync'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
           }`}
         >
           Sync Data
@@ -255,7 +255,7 @@ export default function AdminPage() {
               id="driver-select"
               value={selectedDriverId}
               onChange={(e) => setSelectedDriverId(e.target.value)}
-              className="w-full px-4 py-2 bg-surface border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               disabled={driversLoading}
             >
               <option value="">-- Select a driver --</option>
@@ -470,7 +470,7 @@ export default function AdminPage() {
               id="constructor-select"
               value={selectedConstructorId}
               onChange={(e) => setSelectedConstructorId(e.target.value)}
-              className="w-full px-4 py-2 bg-surface border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
               disabled={constructorsLoading}
             >
               <option value="">-- Select a constructor --</option>
@@ -869,7 +869,7 @@ export default function AdminPage() {
                   id="sync-season-drivers"
                   value={syncDriversSeason}
                   onChange={(e) => setSyncDriversSeason(Number(e.target.value))}
-                  className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                   disabled={syncDrivers.isPending}
                 >
                   {Array.from({ length: 11 }, (_, i) => currentYear - i).map((year) => (
@@ -932,7 +932,7 @@ export default function AdminPage() {
                   id="sync-season-teams"
                   value={syncConstructorsSeason}
                   onChange={(e) => setSyncConstructorsSeason(Number(e.target.value))}
-                  className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                   disabled={syncConstructors.isPending}
                 >
                   {Array.from({ length: 11 }, (_, i) => currentYear - i).map((year) => (
@@ -981,7 +981,7 @@ export default function AdminPage() {
                   id="sync-season-lineups"
                   value={syncLineupsSeason}
                   onChange={(e) => setSyncLineupsSeason(Number(e.target.value))}
-                  className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
                   disabled={syncLineups.isPending}
                 >
                   {Array.from({ length: 11 }, (_, i) => currentYear - i).map((year) => (

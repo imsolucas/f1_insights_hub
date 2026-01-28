@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useConstructorsLineup } from '../../../lib/hooks/use-constructors-lineup';
 import { Constructor } from '../../../lib/api-client';
 import { ErrorState } from '../../_components/error-state';
@@ -96,13 +97,26 @@ export default function TeamsPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold text-foreground uppercase tracking-wide">
-          F1 Teams
-        </h1>
+        <div className="flex items-center gap-3">
+          <Image
+            src="/f1-logo/f1-logo.svg"
+            alt="F1"
+            width={64}
+            height={64}
+            className="h-24 w-auto"
+            priority
+          />
+          <h1 
+            className="text-4xl font-extrabold text-foreground uppercase tracking-wide italic"
+            style={{ fontFamily: 'var(--font-poppins)' }}
+          >
+            Teams
+          </h1>
+        </div>
         <div className="flex items-center gap-4 flex-wrap">
           {/* Season Selector */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="season-select" className="text-sm text-muted-foreground">
+          <div className="flex items-center gap-3">
+            <label htmlFor="season-select" className="text-sm font-medium text-muted-foreground">
               Season:
             </label>
             <select
@@ -111,10 +125,9 @@ export default function TeamsPage() {
               onChange={(e) => {
                 const newSeason = Number(e.target.value);
                 setSelectedSeason(newSeason);
-                // Automatically refetch when season changes
                 refetch();
               }}
-              className="px-3 py-1.5 text-sm border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="px-4 py-2 text-sm font-medium border border-border rounded-xl bg-muted/30 text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 hover:border-primary/50"
             >
               {seasonOptions.map((year) => (
                 <option key={year} value={year}>

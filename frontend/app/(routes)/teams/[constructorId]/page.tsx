@@ -1,6 +1,7 @@
 'use client';
 
 import { use } from 'react';
+import Image from 'next/image';
 import { useConstructor, useConstructorStats, useConstructorResults } from '../../../../lib/hooks/use-constructors';
 import { ResultsTable } from '../../../_components/results-table';
 import { LoadingSkeleton } from '../../../_components/loading-skeleton';
@@ -61,7 +62,12 @@ export default function TeamDetailPage({ params }: { params: Promise<{ construct
       ) : null}
 
       <section>
-        <h2 className="text-2xl font-semibold text-foreground mb-4">Recent Results</h2>
+        <h2 
+          className="text-2xl font-bold text-foreground mb-4 uppercase tracking-wide italic"
+          style={{ fontFamily: 'var(--font-poppins)' }}
+        >
+          Recent Results
+        </h2>
         {resultsLoading ? (
           <LoadingSkeleton />
         ) : resultsError ? (

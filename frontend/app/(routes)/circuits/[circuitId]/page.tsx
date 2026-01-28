@@ -1,6 +1,7 @@
 'use client';
 
 import { use } from 'react';
+import Image from 'next/image';
 import { useCircuit, useCircuitRaces } from '../../../../lib/hooks/use-circuits';
 import { RaceCard } from '../../../_components/race-card';
 import { LoadingSkeleton } from '../../../_components/loading-skeleton';
@@ -32,7 +33,21 @@ export default function CircuitDetailPage({ params }: { params: Promise<{ circui
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">{circuit.name}</h1>
+        <div className="flex items-center gap-3 mb-2">
+          <Image
+            src="/f1-logo/f1-logo.svg"
+            alt="F1"
+            width={64}
+            height={64}
+            className="h-16 w-auto"
+          />
+          <h1 
+            className="text-3xl font-extrabold text-foreground uppercase tracking-wide italic"
+            style={{ fontFamily: 'var(--font-poppins)' }}
+          >
+            {circuit.name}
+          </h1>
+        </div>
         <p className="text-lg text-muted-foreground">
           {circuit.location}, {circuit.country}
         </p>
@@ -44,7 +59,12 @@ export default function CircuitDetailPage({ params }: { params: Promise<{ circui
       </div>
 
       <section>
-        <h2 className="text-2xl font-semibold text-foreground mb-4">Races at this Circuit</h2>
+        <h2 
+          className="text-2xl font-bold text-foreground mb-4 uppercase tracking-wide italic"
+          style={{ fontFamily: 'var(--font-poppins)' }}
+        >
+          Races at this Circuit
+        </h2>
         {racesLoading ? (
           <LoadingSkeleton />
         ) : racesError ? (

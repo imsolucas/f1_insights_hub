@@ -202,15 +202,131 @@ function DriverGridItem({ driver, position, isExpanded, onMouseEnter, onMouseLea
 
 function GridSkeleton() {
   return (
-    <div className="flex flex-col gap-3 max-w-4xl mx-auto">
-      {Array.from({ length: 10 }).map((_, rowIndex) => (
-        <div 
-          key={rowIndex} 
-          className={`flex gap-3 ${rowIndex % 2 === 0 ? 'justify-start' : 'justify-end'}`}
-        >
-          <div className="w-[45%] h-[120px] bg-slate-800 rounded-xl animate-pulse" />
-        </div>
-      ))}
+    <RaceTrackBackground>
+      <div className="flex flex-col gap-5 max-w-4xl mx-auto py-16 px-12">
+        {Array.from({ length: 10 }).map((_, rowIndex) => {
+          const side = (rowIndex + 1) % 2 === 1 ? 'left' : 'right';
+          return (
+            <div 
+              key={rowIndex} 
+              className={`flex relative ${side === 'left' ? 'justify-start' : 'justify-end'}`}
+            >
+              {/* Grid position number */}
+              <div className={`
+                absolute top-1/2 -translate-y-1/2 text-white/10 text-6xl font-bold tabular-nums
+                ${side === 'left' ? 'left-2' : 'right-2'}
+              `}>
+                {rowIndex + 1}
+              </div>
+              <div className="relative w-[45%]">
+                {/* Corner brackets */}
+                <div className="absolute -inset-3">
+                  <div className={`absolute top-0 ${side === 'left' ? 'left-0' : 'right-0'} w-6 h-6`}>
+                    <div className={`absolute top-0 ${side === 'left' ? 'left-0' : 'right-0'} w-full h-0.5 bg-white/20`} />
+                    <div className={`absolute top-0 ${side === 'left' ? 'left-0' : 'right-0'} w-0.5 h-full bg-white/20`} />
+                  </div>
+                  <div className={`absolute bottom-0 ${side === 'left' ? 'left-0' : 'right-0'} w-6 h-6`}>
+                    <div className={`absolute bottom-0 ${side === 'left' ? 'left-0' : 'right-0'} w-full h-0.5 bg-white/20`} />
+                    <div className={`absolute bottom-0 ${side === 'left' ? 'left-0' : 'right-0'} w-0.5 h-full bg-white/20`} />
+                  </div>
+                </div>
+                <div className="h-[120px] bg-slate-700/30 rounded-xl animate-pulse border border-white/5" />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </RaceTrackBackground>
+  );
+}
+
+function RaceTrackBackground({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative overflow-hidden rounded-2xl shadow-2xl border border-white/5">
+      {/* Asphalt background with subtle texture */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: `
+            linear-gradient(180deg, 
+              rgba(15, 23, 42, 0.98) 0%, 
+              rgba(30, 41, 59, 0.95) 50%, 
+              rgba(15, 23, 42, 0.98) 100%
+            )
+          `,
+        }}
+      />
+      
+      {/* Track surface texture overlay */}
+      <div 
+        className="absolute inset-0 opacity-30"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 20% 50%, rgba(255,255,255,0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 50%, rgba(255,255,255,0.03) 0%, transparent 50%)
+          `,
+        }}
+      />
+      
+      {/* Top kerb - red and white stripes with shadow */}
+      <div className="absolute top-0 left-0 right-0 h-5 flex overflow-hidden shadow-md">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <div 
+            key={i} 
+            className={`h-full ${i % 2 === 0 ? 'bg-red-600' : 'bg-white'}`}
+            style={{ width: '24px', flexShrink: 0 }}
+          />
+        ))}
+      </div>
+      
+      {/* Bottom kerb - red and white stripes with shadow */}
+      <div className="absolute bottom-0 left-0 right-0 h-5 flex overflow-hidden shadow-md">
+        {Array.from({ length: 50 }).map((_, i) => (
+          <div 
+            key={i} 
+            className={`h-full ${i % 2 === 0 ? 'bg-red-600' : 'bg-white'}`}
+            style={{ width: '24px', flexShrink: 0 }}
+          />
+        ))}
+      </div>
+      
+      {/* Center line dashes - white road marking */}
+      <div className="absolute left-1/2 top-5 bottom-5 w-0.5 -translate-x-1/2 flex flex-col items-center gap-6 py-8">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div key={i} className="w-1.5 h-10 bg-white/40 rounded-sm" />
+        ))}
+      </div>
+      
+      {/* Vertical track edge lines */}
+      <div className="absolute left-8 top-5 bottom-5 w-px bg-white/10" />
+      <div className="absolute right-8 top-5 bottom-5 w-px bg-white/10" />
+      
+      {/* Starting lights indicator at top */}
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 flex gap-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div 
+            key={i} 
+            className="w-4 h-4 rounded-full bg-red-500/30 border border-red-500/50 shadow-lg shadow-red-500/20"
+          />
+        ))}
+      </div>
+      
+      {/* Checkered finish line on top edge */}
+      <div className="absolute top-5 left-1/2 -translate-x-1/2 w-32 h-3 grid grid-cols-8 grid-rows-2 overflow-hidden opacity-60">
+        {Array.from({ length: 16 }).map((_, i) => (
+          <div 
+            key={i} 
+            className={`${
+              (Math.floor(i / 8) + (i % 8)) % 2 === 0 ? 'bg-white' : 'bg-black'
+            }`}
+          />
+        ))}
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        {children}
+      </div>
     </div>
   );
 }
@@ -224,9 +340,11 @@ export function DriverExpandableGrid({ drivers, isLoading }: DriverExpandableGri
 
   if (!drivers || drivers.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground text-lg">No drivers found</p>
-      </div>
+      <RaceTrackBackground>
+        <div className="text-center py-24">
+          <p className="text-muted-foreground text-lg">No drivers found</p>
+        </div>
+      </RaceTrackBackground>
     );
   }
 
@@ -242,33 +360,68 @@ export function DriverExpandableGrid({ drivers, isLoading }: DriverExpandableGri
   });
 
   return (
-    <div className="flex flex-col gap-3 max-w-4xl mx-auto">
-      {gridRows.map(({ driver, position, side }) => (
-        <div 
-          key={driver.id}
-          className={`
-            flex transition-all duration-500
-            ${side === 'left' ? 'justify-start' : 'justify-end'}
-            ${expandedDriverId === driver.id ? 'z-20' : 'z-10'}
-          `}
-        >
-          <div className={`
-            transition-all duration-500 ease-out
-            ${expandedDriverId === driver.id 
-              ? 'w-[85%] md:w-[75%]' 
-              : 'w-[50%] md:w-[45%]'
-            }
-          `}>
-            <DriverGridItem
-              driver={driver}
-              position={position}
-              isExpanded={expandedDriverId === driver.id}
-              onMouseEnter={() => setExpandedDriverId(driver.id)}
-              onMouseLeave={() => setExpandedDriverId(null)}
-            />
+    <RaceTrackBackground>
+      <div className="flex flex-col gap-5 max-w-4xl mx-auto py-16 px-12">
+        {gridRows.map(({ driver, position, side }) => (
+          <div 
+            key={driver.id}
+            className={`
+              flex transition-all duration-500 relative
+              ${side === 'left' ? 'justify-start' : 'justify-end'}
+              ${expandedDriverId === driver.id ? 'z-20' : 'z-10'}
+            `}
+          >
+            {/* Grid position number indicator on track */}
+            <div className={`
+              absolute top-1/2 -translate-y-1/2 text-white/10 text-6xl font-bold tabular-nums
+              ${side === 'left' ? 'left-2' : 'right-2'}
+            `}>
+              {position}
+            </div>
+            
+            {/* Grid box with F1-style corner markers */}
+            <div className={`
+              relative transition-all duration-500 ease-out
+              ${expandedDriverId === driver.id 
+                ? 'w-[85%] md:w-[75%]' 
+                : 'w-[50%] md:w-[45%]'
+              }
+            `}>
+              {/* Grid slot box with corner brackets */}
+              <div className="absolute -inset-3">
+                {/* Top-left corner */}
+                <div className={`absolute top-0 ${side === 'left' ? 'left-0' : 'right-0'} w-6 h-6`}>
+                  <div className={`absolute top-0 ${side === 'left' ? 'left-0' : 'right-0'} w-full h-0.5 bg-white/30`} />
+                  <div className={`absolute top-0 ${side === 'left' ? 'left-0' : 'right-0'} w-0.5 h-full bg-white/30`} />
+                </div>
+                {/* Bottom-left corner */}
+                <div className={`absolute bottom-0 ${side === 'left' ? 'left-0' : 'right-0'} w-6 h-6`}>
+                  <div className={`absolute bottom-0 ${side === 'left' ? 'left-0' : 'right-0'} w-full h-0.5 bg-white/30`} />
+                  <div className={`absolute bottom-0 ${side === 'left' ? 'left-0' : 'right-0'} w-0.5 h-full bg-white/30`} />
+                </div>
+                {/* Top-right corner */}
+                <div className={`absolute top-0 ${side === 'left' ? 'right-0' : 'left-0'} w-6 h-6`}>
+                  <div className={`absolute top-0 ${side === 'left' ? 'right-0' : 'left-0'} w-full h-0.5 bg-white/20`} />
+                  <div className={`absolute top-0 ${side === 'left' ? 'right-0' : 'left-0'} w-0.5 h-full bg-white/20`} />
+                </div>
+                {/* Bottom-right corner */}
+                <div className={`absolute bottom-0 ${side === 'left' ? 'right-0' : 'left-0'} w-6 h-6`}>
+                  <div className={`absolute bottom-0 ${side === 'left' ? 'right-0' : 'left-0'} w-full h-0.5 bg-white/20`} />
+                  <div className={`absolute bottom-0 ${side === 'left' ? 'right-0' : 'left-0'} w-0.5 h-full bg-white/20`} />
+                </div>
+              </div>
+              
+              <DriverGridItem
+                driver={driver}
+                position={position}
+                isExpanded={expandedDriverId === driver.id}
+                onMouseEnter={() => setExpandedDriverId(driver.id)}
+                onMouseLeave={() => setExpandedDriverId(null)}
+              />
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </RaceTrackBackground>
   );
 }

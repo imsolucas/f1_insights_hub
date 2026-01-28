@@ -36,13 +36,16 @@ frontend/
 ⸻
 2) Branding & Design System
 
-- Reference docs/branding.mdc at the root for all brand guidance (tokens, color usage, typography, spacing).
+- Reference branding.mdc for all brand guidance (tokens, color usage, typography, spacing).
 - shadcn/ui + Tailwind only; no external component libraries.
 - No arbitrary hex colors in app code. Use Tailwind tokens: bg-primary, text-foreground, border, accent, etc.
-- Typography: Body text-[17px] leading-7; headings as in brand guide. Avoid tiny text.
+- Typography: 
+  - **Headings**: Use Poppins font (`style={{ fontFamily: 'var(--font-poppins)' }}`) with `font-extrabold` (h1) or `font-bold` (h2/h3), `italic`, `uppercase`, `tracking-wide` for all page titles and section headers.
+  - **Body text**: System UI or Inter for readability. Body text-[17px] leading-7; headings as in brand guide. Avoid tiny text.
 - Ensure responsive design so app looks good on web and mobile with dynamic component and font sizing.
 - Use Hero Icons or Lucide React for icons. Never design custom SVG icons unless absolutely necessary.
 - Follow F1-themed aesthetic: clean, data-first, developer-tool feel (similar to shadcn/ui, Linear, Vercel Dashboard).
+- Main page titles should include F1 logo image (`/f1-logo/f1-logo.svg`) before the text.
 ⸻
 3) Routing & Layout (Next.js App Router)
 

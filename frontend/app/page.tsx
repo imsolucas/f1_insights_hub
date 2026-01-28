@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useCurrentSeasonSchedule } from '../lib/hooks/use-races';
 import { RaceCard } from './_components/race-card';
 import { CardSkeleton } from './_components/loading-skeleton';
@@ -15,7 +16,22 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-foreground mb-2">F1 Insight Hub</h1>
+        <div className="flex items-center gap-3 mb-2">
+          <Image
+            src="/f1-logo/f1-logo.svg"
+            alt="F1"
+            width={64}
+            height={64}
+            className="h-24 w-auto"
+            priority
+          />
+          <h1 
+            className="text-4xl font-extrabold text-foreground uppercase tracking-wide italic"
+            style={{ fontFamily: 'var(--font-poppins)' }}
+          >
+            Insight Hub
+          </h1>
+        </div>
         <p className="text-lg text-muted-foreground">
           Explore Formula 1 race data, statistics, and insights
         </p>
@@ -24,7 +40,12 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-semibold text-foreground">Upcoming Races</h2>
+            <h2 
+              className="text-2xl font-bold text-foreground uppercase tracking-wide italic"
+              style={{ fontFamily: 'var(--font-poppins)' }}
+            >
+              Upcoming Races
+            </h2>
             <Link href="/schedule" className="text-sm text-primary hover:underline">
               View all
             </Link>
@@ -80,7 +101,12 @@ export default function Home() {
           href="/drivers"
           className="p-6 border border-border rounded-lg hover:border-primary transition-colors bg-card"
         >
-          <h3 className="text-xl font-semibold text-foreground mb-2">Drivers</h3>
+          <h3 
+            className="text-xl font-bold text-foreground mb-2 uppercase tracking-wide italic"
+            style={{ fontFamily: 'var(--font-poppins)' }}
+          >
+            Drivers
+          </h3>
           <p className="text-muted-foreground">Browse driver profiles and statistics</p>
         </Link>
         <Link
@@ -94,7 +120,12 @@ export default function Home() {
           href="/circuits"
           className="p-6 border border-border rounded-lg hover:border-primary transition-colors bg-card"
         >
-          <h3 className="text-xl font-semibold text-foreground mb-2">Circuits</h3>
+          <h3 
+            className="text-xl font-bold text-foreground mb-2 uppercase tracking-wide italic"
+            style={{ fontFamily: 'var(--font-poppins)' }}
+          >
+            Circuits
+          </h3>
           <p className="text-muted-foreground">Discover F1 circuits around the world</p>
         </Link>
       </div>

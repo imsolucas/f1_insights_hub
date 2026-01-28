@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useCurrentSeasonSchedule } from '../../../lib/hooks/use-races';
 import { RaceCard } from '../../_components/race-card';
 import { CardSkeleton } from '../../_components/loading-skeleton';
@@ -10,7 +11,22 @@ export default function SchedulePage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-foreground mb-8">Race Schedule</h1>
+      <div className="flex items-center gap-3 mb-8">
+        <Image
+          src="/f1-logo/f1-logo.svg"
+          alt="F1"
+          width={64}
+          height={64}
+          className="h-24 w-auto"
+          priority
+        />
+        <h1 
+          className="text-4xl font-extrabold text-foreground uppercase tracking-wide italic"
+          style={{ fontFamily: 'var(--font-poppins)' }}
+        >
+          Race Schedule
+        </h1>
+      </div>
 
       {isLoading ? (
         <div className="space-y-4">
