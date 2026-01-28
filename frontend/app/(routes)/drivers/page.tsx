@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useDriversLineup } from '../../../lib/hooks/use-drivers-lineup';
-import { StartingGrid } from '../../_components/starting-grid';
+import { DriverExpandableGrid } from '../../_components/driver-expandable-grid';
 import { ErrorState } from '../../_components/error-state';
 
 const SEASON_STORAGE_KEY = 'f1-insight-hub-drivers-selected-season';
@@ -71,7 +71,7 @@ export default function DriversPage() {
       {error ? (
         <ErrorState message="Failed to load drivers" onRetry={() => refetch()} />
       ) : (
-        <StartingGrid drivers={data?.drivers || []} isLoading={isLoading} />
+        <DriverExpandableGrid drivers={data?.drivers || []} isLoading={isLoading} />
       )}
     </div>
   );
