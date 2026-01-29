@@ -5,9 +5,7 @@ import { Driver } from '../api-client';
  * Keys are lowercase driverId from API; values are the filename without .png
  */
 const DRIVER_IMAGE_OVERRIDES: Record<string, string> = {
-  // Andrea Kimi Antonelli -> file is andrea_kim_antonelli (not andrea_kimi_antonelli)
-  antonelli: 'andrea_kim_antonelli',
-  // Isaac Hadjar -> file is isaac_hadjar
+  antonelli: 'kimi_antonelli',
   hadjar: 'isaac_hadjar',
 };
 
@@ -16,12 +14,22 @@ const DRIVER_IMAGE_OVERRIDES: Record<string, string> = {
  * Key: normalized fullName that API would produce; value: actual filename (no .png)
  */
 const DRIVER_IMAGE_NAME_OVERRIDES: Record<string, string> = {
-  andrea_kimi_antonelli: 'andrea_kim_antonelli',
+  andrea_kimi_antonelli: 'kimi_antonelli',
   isack_hadjar: 'isaac_hadjar',
+  alex_albon: 'alexander_albon',
 };
+
+function normalizeNamePart(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z0-9_]/g, '');
+}
 
 /**
  * Get driver image path. Uses overrides when API name doesn't match file naming.
+ * Tries driverId override, then forename_surname override, then forename_surname as filename.
  */
 export function getDriverImagePath(driver: Driver): string {
   const driverIdKey = driver.driverId?.toLowerCase().trim();
@@ -30,13 +38,28 @@ export function getDriverImagePath(driver: Driver): string {
     return `/driver-images/${overrideById}.png`;
   }
 
-  const fullName = `${driver.forename}_${driver.surname}`
-    .toLowerCase()
-    .replace(/\s+/g, '_')
-    .replace(/[^a-z0-9_]/g, '');
-  const overrideByName = DRIVER_IMAGE_NAME_OVERRIDES[fullName];
+  const forename = normalizeNamePart(driver.forename ?? '');
+  const surname = normalizeNamePart(driver.surname ?? '');
+  const fullName = forename && surname ? `${forename}_${surname}` : surname || forename;
+
+  const overrideByName = fullName && DRIVER_IMAGE_NAME_OVERRIDES[fullName];
   if (overrideByName) {
     return `/driver-images/${overrideByName}.png`;
   }
-  return `/driver-images/${fullName}.png`;
+  if (fullName) {
+    return `/driver-images/${fullName}.png`;
+  }
+  return '/driver-images/unknown_driver.png';
+}
+
+/**
+ * Get initials for a driver (e.g. "FA" for Fernando Alonso). Used as fallback when image fails to load.
+ */
+export function getDriverInitials(driver: Driver): string {
+  const f = (driver.forename ?? '').trim();
+  const s = (driver.surname ?? '').trim();
+  if (f && s) return `${f[0]}${s[0]}`.toUpperCase();
+  if (s) return s.slice(0, 2).toUpperCase();
+  if (f) return f.slice(0, 2).toUpperCase();
+  return '?';
 }

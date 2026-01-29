@@ -12,19 +12,11 @@ export default function SchedulePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center gap-3 mb-8">
-        <Image
-          src="/f1-logo/f1-logo.svg"
-          alt="F1"
-          width={64}
-          height={64}
-          className="h-24 w-auto"
-          priority
-        />
         <h1 
           className="text-4xl font-extrabold text-foreground uppercase tracking-wide italic"
           style={{ fontFamily: 'var(--font-poppins)' }}
         >
-          Race Schedule
+          F1 Race Schedule
         </h1>
       </div>
 

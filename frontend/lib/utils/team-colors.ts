@@ -73,3 +73,31 @@ export function getTeamInitials(teamName: string | null | undefined): string {
   
   return 'F1';
 }
+
+/**
+ * Get team car image path.
+ */
+export function getTeamCarPath(teamName: string | null | undefined): string {
+  if (!teamName) return '/team-cars/2026ferraricarright.webp'; // Default fallback
+  
+  const normalized = teamName.toLowerCase().trim();
+  
+  if (normalized.includes('ferrari')) return '/team-cars/2026ferraricarright.webp';
+  if (normalized.includes('mercedes')) return '/team-cars/2026mercedescarright.webp';
+  // Check Racing Bulls before Red Bull Racing to avoid conflicts
+  if (normalized.includes('racing bulls') || (normalized.includes('rb ') && !normalized.includes('red bull')) || normalized === 'rb') {
+    return '/team-cars/2026racingbullscarright.webp';
+  }
+  if (normalized.includes('red bull') || normalized.includes('redbull')) {
+    return '/team-cars/2026redbullracingcarright.webp';
+  }
+  if (normalized.includes('mclaren')) return '/team-cars/2026mclarencarright.webp';
+  if (normalized.includes('aston martin') || normalized.includes('astonmartin')) return '/team-cars/2026astonmartincarright.webp';
+  if (normalized.includes('alpine')) return '/team-cars/2026alpinecarright.webp';
+  if (normalized.includes('williams')) return '/team-cars/2026williamscarright.webp';
+  if (normalized.includes('haas')) return '/team-cars/2026haasf1teamcarright.webp';
+  if (normalized.includes('sauber') || normalized.includes('kick sauber') || normalized.includes('audi')) return '/team-cars/2026audicarright.webp';
+  if (normalized.includes('cadillac')) return '/team-cars/2026cadillaccarright.webp';
+  
+  return '/team-cars/2026ferraricarright.webp'; // Default fallback
+}

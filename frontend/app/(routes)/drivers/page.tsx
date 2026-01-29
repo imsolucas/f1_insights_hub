@@ -48,19 +48,11 @@ export default function DriversPage() {
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <Image
-            src="/f1-logo/f1-logo.svg"
-            alt="F1"
-            width={64}
-            height={64}
-            className="h-24 w-auto"
-            priority
-          />
           <h1 
             className="text-4xl font-extrabold text-foreground uppercase tracking-wide italic"
             style={{ fontFamily: 'var(--font-poppins)' }}
           >
-            Drivers {selectedSeason}
+            F1 Drivers {selectedSeason}
           </h1>
         </div>
         <div className="flex items-center gap-4 flex-wrap">

@@ -218,6 +218,10 @@ export interface ConstructorStats {
   podiums: number;
 }
 
+export interface ConstructorWithDrivers extends Constructor {
+  drivers: Driver[];
+}
+
 export interface SyncConstructorsResponse {
   message: string;
 }
@@ -232,7 +236,7 @@ export const constructorsApi = {
     apiClient.get<{ constructors: Constructor[]; total: number; limit?: number; offset?: number }>('/constructors', params),
   
   getLineup: (params: { season: number }) =>
-    apiClient.get<{ constructors: Constructor[]; total: number; season: number }>('/constructors/lineup', params),
+    apiClient.get<{ constructors: ConstructorWithDrivers[]; total: number; season: number }>('/constructors/lineup', params),
   
   getById: (constructorId: string) =>
     apiClient.get<{ constructor: Constructor }>(`/constructors/${constructorId}`),

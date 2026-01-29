@@ -17,19 +17,11 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Image
-            src="/f1-logo/f1-logo.svg"
-            alt="F1"
-            width={64}
-            height={64}
-            className="h-24 w-auto"
-            priority
-          />
           <h1 
             className="text-4xl font-extrabold text-foreground uppercase tracking-wide italic"
             style={{ fontFamily: 'var(--font-poppins)' }}
           >
-            Insight Hub
+            F1 Insight Hub
           </h1>
         </div>
         <p className="text-lg text-muted-foreground">

@@ -81,12 +81,48 @@ export const getConstructorsLineup = async (req: Request, res: Response, next: N
       throw new ApiError(400, 'BAD_REQUEST', 'Season parameter is required for lineup endpoint');
     }
 
-    const lineups = await lineupRepo.getConstructorLineup(query.season);
+    // Get both driver and constructor lineups
+    const driverLineups = await lineupRepo.getDriverLineup(query.season);
+    const constructorLineups = await lineupRepo.getConstructorLineup(query.season);
     
-    // Transform lineup data to match constructor format
-    const constructors = lineups.map((lineup) => lineup.constructor);
+    // Group drivers by team name
+    const teamDriversMap = new Map<string, Array<{
+      id: string;
+      driverId: string;
+      code: string | null;
+      forename: string;
+      surname: string;
+      dateOfBirth: Date | null;
+      nationality: string;
+      url: string | null;
+      permanentNumber: number | null;
+      driverChampionships: number;
+      constructorChampionships: number;
+      currentTeam: string | null;
+      isActive: boolean;
+      teamName: string;
+      driverNumber: number | null;
+    }>>();
+    
+    for (const lineup of driverLineups) {
+      const teamName = lineup.teamName;
+      if (!teamDriversMap.has(teamName)) {
+        teamDriversMap.set(teamName, []);
+      }
+      teamDriversMap.get(teamName)!.push({
+        ...lineup.driver,
+        teamName: lineup.teamName,
+        driverNumber: lineup.driverNumber,
+      });
+    }
 
-    sendSuccess(res, { constructors, total: constructors.length, season: query.season }, correlationId);
+    // Attach drivers to each constructor
+    const constructorsWithDrivers = constructorLineups.map((lineup) => ({
+      ...lineup.constructor,
+      drivers: teamDriversMap.get(lineup.constructor.name) || [],
+    }));
+
+    sendSuccess(res, { constructors: constructorsWithDrivers, total: constructorsWithDrivers.length, season: query.season }, correlationId);
   } catch (error) {
     next(error);
   }
